@@ -430,7 +430,7 @@ const receiptTime = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '
         document.getElementById('previewPaymentMethod').textContent = document.getElementById('paymentMethod').value;
         
         // Notes
-        document.getElementById('previewNotes').textContent = document.getElementById('notes').value || 'Thank you for your business!';
+        document.getElementById('previewNotes').textContent = document.getElementById('notes').value || '';
         
         // Items
         const itemsContainer = document.getElementById('previewItems');
