@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -101,7 +102,7 @@
                 <div class="mt-4 text-center">
                     <p class="text-sm text-gray-600">
                         Contact IT support at 
-                        <a href="mailto:support@veeplus.com" class="font-medium text-blue-600 hover:text-blue-500">eugeneasande@icloud.com</a>
+                        <a href="mailto:support@veeplus.com" class="font-medium text-blue-600 hover:text-blue-500">support@veeplus.com</a>
                     </p>
                 </div>
             </div>
@@ -132,8 +133,16 @@
         }
 
         // Correct credentials (hashed)
-        const correctUsernameHash = simpleHash("purity");
-        const correctPasswordHash = simpleHash("Purity@12345");
+        const correctCredentials = [
+            {
+                usernameHash: simpleHash("purity"),
+                passwordHash: simpleHash("Purity@12345")
+            },
+            {
+                usernameHash: simpleHash("admin"),
+                passwordHash: simpleHash("Admin@12345")
+            }
+        ];
 
         // Handle form submission
         document.getElementById('loginForm').addEventListener('submit', function(e) {
@@ -147,10 +156,16 @@
             const usernameHash = simpleHash(username);
             const passwordHash = simpleHash(password);
             
-            if (usernameHash === correctUsernameHash && passwordHash === correctPasswordHash) {
+            const isValidLogin = correctCredentials.some(cred => 
+                usernameHash === cred.usernameHash && passwordHash === cred.passwordHash
+            );
+            
+            if (isValidLogin) {
                 // Successful login
                 errorElement.classList.add('hidden');
-                window.location.href = 'vee.html';
+                // Check if it's admin login
+                const isAdmin = usernameHash === simpleHash("admin") && passwordHash === simpleHash("Admin@12345");
+                window.location.href = isAdmin ? 'admin.html' : 'vee.html';
             } else {
                 // Failed login
                 errorElement.textContent = 'Invalid username or password. Please try again.';
