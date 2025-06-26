@@ -74,8 +74,9 @@
           </div>
           <div class="hidden origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="export-menu-button" tabindex="-1" id="export-menu">
             <div class="py-1" role="none">
-              <a href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100" role="menuitem" tabindex="-1" id="export-excel">Export to Excel</a>
-              <a href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100" role="menuitem" tabindex="-1" id="export-pdf">Export to PDF</a>
+                <a href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100 text-right" role="menuitem" tabindex="-1" id="export-excel">Export to Excel</a>
+                <a href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100 text-right" role="menuitem" tabindex="-1" id="export-pdf">Export to PDF</a>
+                
             </div>
           </div>
         </div>
@@ -83,16 +84,23 @@
     </div>
 
     <div class="bg-white shadow overflow-hidden sm:rounded-lg">
-      <div class="px-4 py-5 sm:px-6 border-b border-gray-200 bg-gray-50 flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
-        <div class="relative w-full md:w-auto">
-          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-            </svg>
+        <div class="flex flex-wrap md:flex-nowrap items-center justify-between gap-3 mb-4">
+            <!-- Search Input -->
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+                <svg class="h-4 w-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+              <input type="text" id="searchInput"
+                class="pl-7 pr-3 py-1.5 border border-gray-300 rounded-md text-sm w-44 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400"
+                placeholder="Search..." />
+            </div>
+          
+           
+            
           </div>
-          <input type="text" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Search receipts..." id="searchInput">
-        </div>
-        <div class="flex items-center space-x-2">
+          
           <span class="text-sm text-gray-500" id="showingText">Showing 1 to 10 of 100 entries</span>
           <select class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md" id="perPageSelect">
             <option value="10">10 per page</option>
