@@ -122,62 +122,58 @@
         });
 
         // Hash function for credentials
-        function simpleHash(str) {
-            let hash = 0;
-            for (let i = 0; i < str.length; i++) {
-                const char = str.charCodeAt(i);
-                hash = (hash << 5) - hash + char;
-                hash = hash & hash; // Convert to 32bit integer
-            }
-            return hash.toString();
-        }
+        // Simple hash function
+function simpleHash(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = (hash << 5) - hash + char;
+        hash = hash & hash;
+    }
+    return hash.toString();
+}
 
-        // Correct credentials (hashed)
-        const correctCredentials = [
-            {
-                usernameHash: simpleHash("purity"),
-                passwordHash: simpleHash("Purity@12345")
-            },
-            {
-                usernameHash: simpleHash("admin"),
-                passwordHash: simpleHash("Admin@12345")
-            }
-        ];
+// Hardcoded hash values (already hashed)
+const correctCredentials = [
+    {
+        usernameHash: "137063350", // simpleHash("purity")
+        passwordHash: "-496999135" // simpleHash("Purity@12345")
+    },
+    {
+        usernameHash: "93029210", // simpleHash("admin")
+        passwordHash: "-495065926" // simpleHash("Admin@12345")
+    }
+];
 
-        // Handle form submission
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const errorElement = document.getElementById('error-message');
-            
-            // Hash the input
-            const usernameHash = simpleHash(username);
-            const passwordHash = simpleHash(password);
-            
-            const isValidLogin = correctCredentials.some(cred => 
-                usernameHash === cred.usernameHash && passwordHash === cred.passwordHash
-            );
-            
-            if (isValidLogin) {
-                // Successful login
-                errorElement.classList.add('hidden');
-                // Check if it's admin login
-                const isAdmin = usernameHash === simpleHash("admin") && passwordHash === simpleHash("Admin@12345");
-                window.location.href = isAdmin ? 'admin.html' : 'vee.html';
-            } else {
-                // Failed login
-                errorElement.textContent = 'Invalid username or password. Please try again.';
-                errorElement.classList.remove('hidden');
-                
-                // Shake animation for error
-                errorElement.style.animation = 'shake 0.5s';
-                setTimeout(() => {
-                    errorElement.style.animation = '';
-                }, 500);
-            }
-        });
+// Handle form submission
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    const errorElement = document.getElementById('error-message');
+    
+    const usernameHash = simpleHash(username);
+    const passwordHash = simpleHash(password);
+    
+    const isValidLogin = correctCredentials.some(cred => 
+        usernameHash === cred.usernameHash && passwordHash === cred.passwordHash
+    );
+
+    if (isValidLogin) {
+        errorElement.classList.add('hidden');
+        const isAdmin = usernameHash === "93029210" && passwordHash === "-495065926";
+        window.location.href = isAdmin ? 'admin.html' : 'vee.html';
+    } else {
+        errorElement.textContent = 'Invalid username or password. Please try again.';
+        errorElement.classList.remove('hidden');
+        errorElement.style.animation = 'shake 0.5s';
+        setTimeout(() => {
+            errorElement.style.animation = '';
+        }, 500);
+    }
+});
+
 
         // Toggle password visibility
         const togglePassword = document.getElementById('togglePassword');
