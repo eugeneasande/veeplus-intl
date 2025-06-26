@@ -249,6 +249,10 @@
       }
     };
   document.addEventListener('DOMContentLoaded', function() {
+    // Initialize receipt number from localStorage or default to 1
+    let receiptNumber = localStorage.getItem('lastReceiptNumber') || 1;
+    document.getElementById('receiptNumber').value = receiptNumber;
+    
     // Set today's date as default
     const today = new Date();
     const formattedDate = today.toISOString().split('T')[0];
@@ -398,7 +402,12 @@ const receiptTime = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '
         .then(res => res.json())
         .then(res => {
             console.log('✅ Saved to SheetDB:', res);
-            alert('✅ Receipt saved successfully');
+            // Increment and save receipt number for next time
+            receiptNumber++;
+            localStorage.setItem('lastReceiptNumber', receiptNumber);
+            document.getElementById('receiptNumber').value = receiptNumber;
+            alert('✅ Receipt saved Successfully!');
+            
         })
         .catch(err => {
             console.error('❌ Error saving to SheetDB:', err);
@@ -430,7 +439,7 @@ const receiptTime = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '
         document.getElementById('previewPaymentMethod').textContent = document.getElementById('paymentMethod').value;
         
         // Notes
-        document.getElementById('previewNotes').textContent = document.getElementById('notes').value || '';
+        document.getElementById('previewNotes').textContent = document.getElementById('notes').value || 'Thank you for your business!';
         
         // Items
         const itemsContainer = document.getElementById('previewItems');
