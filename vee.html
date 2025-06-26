@@ -398,7 +398,7 @@ const receiptTime = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '
         .then(res => res.json())
         .then(res => {
             console.log('✅ Saved to SheetDB:', res);
-            alert('✅ Receipt saved to Google Sheet!');
+            alert('✅ Receipt saved');
         })
         .catch(err => {
             console.error('❌ Error saving to SheetDB:', err);
