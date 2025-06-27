@@ -106,6 +106,7 @@
             <option value="10">10 per page</option>
             <option value="25">25 per page</option>
             <option value="50">50 per page</option>
+            <option value="100">100 per page</option>
           </select>
         </div>
       </div>
@@ -184,17 +185,26 @@
       exportMenu.classList.toggle('hidden');
     });
 
+
     exportExcel.addEventListener('click', function(e) {
       e.preventDefault();
-      const worksheet = XLSX.utils.json_to_sheet(allData);
+      const now = new Date();
+      const dateStr = now.toISOString().split('T')[0];
+      const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '-');
+      
+      const worksheet = XLSX.utils.json_to_sheet(filteredData);
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Receipts");
-      XLSX.writeFile(workbook, "receipts_export.xlsx");
+      XLSX.writeFile(workbook, `receipts_export_${dateStr}_${timeStr}.xlsx`);
       exportMenu.classList.add('hidden');
     });
 
     exportPdf.addEventListener('click', function(e) {
       e.preventDefault();
+      const now = new Date();
+      const dateStr = now.toISOString().split('T')[0];
+      const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '-');
+      
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
       
@@ -206,10 +216,16 @@
       doc.setFontSize(12);
       doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 32);
       
+      // Add search term if any
+      if (searchInput.value) {
+        doc.setFontSize(10);
+        doc.text(`Filtered by: "${searchInput.value}"`, 14, 42);
+      }
+      
       // Add table
       doc.autoTable({
         head: [['Name', 'Phone', 'Model', 'IMEI', 'Qty', 'Price', 'Amount', 'Total', 'Date', 'Time', 'User']],
-        body: allData.map(item => [
+        body: filteredData.map(item => [
           item.name || '',
           item.phone || '',
           item.model || '',
@@ -233,7 +249,7 @@
         }
       });
       
-      doc.save('receipts_export.pdf');
+      doc.save(`receipts_export_${dateStr}_${timeStr}.pdf`);
       exportMenu.classList.add('hidden');
     });
 
