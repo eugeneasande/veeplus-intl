@@ -259,9 +259,46 @@
       }
     };
   document.addEventListener('DOMContentLoaded', function() {
-    // Initialize receipt number from localStorage or default to 1
-    let receiptNumber = localStorage.getItem('lastReceiptNumber') || 1;
-    document.getElementById('receiptNumber').value = receiptNumber;
+    // Initialize receipt number by fetching from sheet
+    let receiptNumber = 1;
+    const receiptInput = document.getElementById('receiptNumber');
+    receiptInput.readOnly = true;
+    receiptInput.classList.add('bg-gray-100', 'cursor-not-allowed');
+    
+    // Function to fetch last receipt number from sheet
+    async function fetchLastReceiptNumber() {
+  try {
+    const response = await fetch("https://sheetdb.io/api/v1/whim74m5dy6u6"); // fetch all rows with a receipt_no
+    const data = await response.json();
+
+    const currentYear = new Date().getFullYear().toString();
+    let maxNum = 0;
+
+    // Go through each row and extract the receipt number for current year
+    data.forEach(entry => {
+      const match = entry.receipt_no.match(/VPL-(\d{4})-(\d+)/);
+      if (match && match[1] === currentYear) {
+        const num = parseInt(match[2]);
+        if (num > maxNum) {
+          maxNum = num;
+        }
+      }
+    });
+
+    const nextNum = maxNum + 1;
+    const formatted = `VPL-${currentYear}-${String(nextNum).padStart(3, '0')}`;
+    receiptInput.value = formatted;
+
+  } catch (error) {
+    console.error("❌ Failed to fetch receipt number:", error);
+    const fallback = `VPL-${new Date().getFullYear()}-001`;
+    receiptInput.value = fallback;
+  }
+}
+
+    
+    // Call the function to initialize
+    fetchLastReceiptNumber();
     
     // Set today's date as default
     const today = new Date();
@@ -412,7 +449,8 @@ const receiptTime = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '
       amount: item.amount,
       total: total,
       date: receiptDate,
-      time: receiptTime 
+      time: receiptTime,
+      receipt_no: document.getElementById('receiptNumber').value
     }))
   })
 })
@@ -420,10 +458,14 @@ const receiptTime = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '
         .then(res => res.json())
         .then(res => {
             console.log('✅ Saved to SheetDB:', res);
-            // Increment and save receipt number for next time
-            receiptNumber++;
-            localStorage.setItem('lastReceiptNumber', receiptNumber);
-            document.getElementById('receiptNumber').value = receiptNumber;
+            // Format new receipt number for next time
+            const currentValue = receiptInput.value;
+            const match = currentValue.match(/VPL-(\d{4})-(\d{3})/);
+            if (match) {
+              const year = match[1];
+              const num = parseInt(match[2]) + 1;
+              receiptInput.value = `VPL-${year}-${num.toString().padStart(3, '0')}`;
+            }
             alert('✅ Receipt saved Successfully!');
             
         })
