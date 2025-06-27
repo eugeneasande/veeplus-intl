@@ -341,6 +341,13 @@
         const receipt = document.getElementById('receiptPreview');
         let customerName = document.getElementById('customerName').value.trim() || 'receipt';
         customerName = customerName.replace(/[^a-z0-9]/gi, '_');
+        
+        // Get first available IMEI
+        let imei = '';
+        const firstItem = document.querySelector('.item-imei');
+        if (firstItem && firstItem.value) {
+            imei = '_' + firstItem.value.replace(/[^a-z0-9]/gi, '');
+        }
 
         html2canvas(receipt, {
             scale: 2,
@@ -348,7 +355,7 @@
             useCORS: true
         }).then(canvas => {
             const link = document.createElement('a');
-            link.download = `${customerName}_receipt.png`;
+            link.download = `${customerName}${imei}_receipt.png`;
             link.href = canvas.toDataURL('image/png');
             link.click();
         });
