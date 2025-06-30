@@ -110,80 +110,87 @@
     </div>
 
     <script>
-        
-        document.addEventListener('keydown', function(e) {
-            if (e.keyCode === 123 || 
-                (e.ctrlKey && e.shiftKey && e.keyCode === 73) || 
-                (e.ctrlKey && e.shiftKey && e.keyCode === 74) || 
-                (e.ctrlKey && e.keyCode === 85)) {
-                e.preventDefault();
-                
-            }
-        });
+  // 🔒 Disable dev tools (optional)
+  document.addEventListener('keydown', function (e) {
+    if (
+      e.keyCode === 123 || 
+      (e.ctrlKey && e.shiftKey && e.keyCode === 73) || 
+      (e.ctrlKey && e.shiftKey && e.keyCode === 74) || 
+      (e.ctrlKey && e.keyCode === 85) 
+    ) {
+      e.preventDefault();
+    }
+  });
 
-        const API_URL = "https://veeplus-login-api.onrender.com/login";
-        
-        document.getElementById('loginForm').addEventListener('submit', async function (e) {
-            e.preventDefault();
-            
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value.trim();
-            const errorMessage = document.getElementById('error-message');
-            
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    errorMessage.classList.add('hidden');
-                    // Redirect to appropriate page
-                    if (result.role === 'admin') {
-                        window.location.href = 'admin.html';
-                    } else {
-                        window.location.href = 'vee.html';
-                    }
-                } else {
-                    errorMessage.textContent = 'Invalid username or password.';
-                    errorMessage.classList.remove('hidden');
-                    // Shake animation for error
-                    errorMessage.style.animation = 'shake 0.5s';
-                    setTimeout(() => {
-                        errorMessage.style.animation = '';
-                    }, 500);
-                }
-            } catch (err) {
-                errorMessage.textContent = 'Server error. Please try again.';
-                errorMessage.classList.remove('hidden');
-                console.error('Login error:', err);
-            }
-        });
+  const API_URL = "https://veeplus-login-api.onrender.com/login";
 
-        // Toggle password visibility
-        const togglePassword = document.getElementById('togglePassword');
-        const passwordInput = document.getElementById('password');
-        
-        togglePassword.addEventListener('click', function() {
-            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordInput.setAttribute('type', type);
-            this.querySelector('i').classList.toggle('fa-eye');
-            this.querySelector('i').classList.toggle('fa-eye-slash');
-        });
+  // 🔐 Handle login form submission
+  document.getElementById('loginForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
 
-        // Add shake animation to CSS
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes shake {
-                0%, 100% { transform: translateX(0); }
-                10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-                20%, 40%, 60%, 80% { transform: translateX(5px); }
-            }
-        `;
-        document.head.appendChild(style);
-    </script>
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const errorMessage = document.getElementById('error-message');
+
+    try {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        errorMessage.classList.add('hidden');
+
+        // ✅ Save token and role
+        localStorage.setItem('token', result.token);
+        localStorage.setItem('role', result.role);
+
+        // ✅ Redirect
+        if (result.role === 'admin') {
+          window.location.href = 'admin.html';
+        } else {
+          window.location.href = 'vee.html';
+        }
+      } else {
+        errorMessage.textContent = 'Invalid username or password.';
+        errorMessage.classList.remove('hidden');
+        errorMessage.style.animation = 'shake 0.5s';
+        setTimeout(() => {
+          errorMessage.style.animation = '';
+        }, 500);
+      }
+    } catch (err) {
+      errorMessage.textContent = 'Server error. Please try again.';
+      errorMessage.classList.remove('hidden');
+      console.error('Login error:', err);
+    }
+  });
+
+  // 👁️ Toggle password visibility
+  const togglePassword = document.getElementById('togglePassword');
+  const passwordInput = document.getElementById('password');
+
+  togglePassword.addEventListener('click', function () {
+    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+    passwordInput.setAttribute('type', type);
+    this.querySelector('i').classList.toggle('fa-eye');
+    this.querySelector('i').classList.toggle('fa-eye-slash');
+  });
+
+  // 💢 Add shake animation
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+      20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+  `;
+  document.head.appendChild(style);
+</script>
+
 </body>
 </html>
