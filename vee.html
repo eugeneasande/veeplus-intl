@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>VEE PLUS INTERNATIONAL LIMITED - Official Receipt</title>
   
-  
+  <script>
+    const token = localStorage.getItem('token');
+    const issuedAt = parseInt(localStorage.getItem('tokenIssuedAt'), 10);
+    const now = Date.now();
+    const expired = !token || !issuedAt || (now - issuedAt > 15 * 60 * 1000);
+
+    if (expired) {
+      localStorage.clear();
+      // Using console.error instead of alert for better user experience
+      console.error("Session expired. Please log in again.");
+      window.location.href = "index.html";
+    }
+  </script>
+
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -42,7 +54,7 @@
     }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     @media print { .no-print { display: none !important; } body { background-color: white; } .receipt-container { box-shadow: none; border-radius: 0; } }
-    @media (max-width: 768px) { .watermark { font-size: 60px; } .item-row { padding: 1rem; margin-bottom: 0.5rem; } .receipt-line { padding: 0.75rem 0; } .receipt-line > div { margin-bottom: 0.25rem; } }
+    @media (max-width: 768px) { .watermark { font-size: 60px; } }
   </style>
 </head>
 <body class="min-h-screen bg-gray-50">
@@ -140,7 +152,11 @@
               <i class="fas fa-print mr-2"></i> Print
             </button>
             <button id="downloadBtn" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md font-medium transition flex items-center justify-center no-print">
-              <i class="fas fa-download mr-2"></i> Download Image
+              <i class="fas fa-download mr-2"></i> Download
+            </button>
+            <!-- NEW SALE BUTTON -->
+            <button id="newSaleBtn" class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded-md font-medium transition flex items-center justify-center no-print">
+              <i class="fas fa-sync-alt mr-2"></i> New Sale
             </button>
           </div>
         </div>
@@ -233,7 +249,6 @@
       const idCaptureInput = document.getElementById('idCaptureInput');
       const idOcrStatus = document.getElementById('idOcrStatus');
 
-      // Helper function to convert a file to a Base64 string
       const toBase64 = file => new Promise((resolve, reject) => {
           const reader = new FileReader();
           reader.readAsDataURL(file);
@@ -241,17 +256,13 @@
           reader.onerror = error => reject(error);
       });
 
-      // --- Handler for Sales Data Photo ---
       photoInput.addEventListener('change', async (event) => {
         const file = event.target.files[0];
         if (!file) return;
-
         ocrStatus.innerHTML = '<div class="loader mr-2"></div> Calling AI for sales data...';
-        
         try {
           const base64ImageData = await toBase64(file);
           const prompt = "Analyze this image of a sales record. Extract the 'Client name', 'Phone#', 'Price', 'Model', and 'IMEI#'. Provide the response as a clean JSON object with the keys: 'clientName', 'phone', 'price', 'model', 'imei'.";
-          
           const payload = {
               contents: [{ parts: [ { text: prompt }, { inline_data: { mime_type: file.type, data: base64ImageData } } ] }],
               generation_config: {
@@ -265,11 +276,9 @@
                   }
               }
           };
-
           const result = await callGeminiApi(payload);
           populateSalesForm(result);
           ocrStatus.textContent = '✅ AI captured sales data!';
-
         } catch (error) {
           console.error("Sales AI OCR Error:", error);
           ocrStatus.textContent = `❌ Error: ${error.message}`;
@@ -279,17 +288,13 @@
         }
       });
 
-      // --- Handler for ID Card Photo ---
       idCaptureInput.addEventListener('change', async (event) => {
         const file = event.target.files[0];
         if (!file) return;
-
         idOcrStatus.innerHTML = '<div class="loader mr-2"></div> Calling AI for ID Number...';
-        
         try {
           const base64ImageData = await toBase64(file);
           const prompt = "Analyze this image of a Kenyan National ID card. Extract only the ID Number. The ID Number is the large number below the 'ID NUMBER' label. Provide the response as a clean JSON object with a single key: 'idNumber'.";
-          
           const payload = {
               contents: [{ parts: [ { text: prompt }, { inline_data: { mime_type: file.type, data: base64ImageData } } ] }],
               generation_config: {
@@ -300,14 +305,12 @@
                   }
               }
           };
-
           const result = await callGeminiApi(payload);
           if (result.idNumber) {
             document.getElementById('customerId').value = result.idNumber.replace(/\s/g, '');
             updateReceiptPreview();
           }
           idOcrStatus.textContent = '✅ AI captured ID Number!';
-
         } catch (error) {
           console.error("ID AI OCR Error:", error);
           idOcrStatus.textContent = `❌ Error: ${error.message}`;
@@ -317,42 +320,33 @@
         }
       });
 
-      // --- Central Gemini API Call Function ---
       async function callGeminiApi(payload) {
         const PROXY_URL = "https://gemini-proxy-server-7qvm.onrender.com/gemini-proxy"; 
-
         const response = await fetch(PROXY_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
-        
         if (!response.ok) {
             const errorResult = await response.json();
             throw new Error(errorResult.error || `Proxy server error: ${response.statusText}`);
         }
-        
-        const result = await response.json();
-        return result;
+        return await response.json();
       }
 
       function populateSalesForm(data) {
-        console.log("Populating form with:", data);
         if (data.clientName) document.getElementById('customerName').value = data.clientName;
         if (data.phone) document.getElementById('customerPhone').value = data.phone.replace(/\s/g, '');
-
         let firstItemRow = document.querySelector('.item-row');
         if (!firstItemRow) {
             document.getElementById('addItemBtn').click();
             firstItemRow = document.querySelector('.item-row');
         }
-
         if (firstItemRow) {
           if (data.model) firstItemRow.querySelector('.item-desc').value = data.model.replace(/\s+/g, ' ');
           if (data.price) firstItemRow.querySelector('.item-price').value = data.price.replace(/KES|,/g, '').trim();
           if (data.imei) firstItemRow.querySelector('.item-imei').value = data.imei;
         }
-        
         updateReceiptPreview();
       }
       // --- GEMINI AI OCR FUNCTIONALITY END ---
@@ -443,6 +437,13 @@
           link.click();
         });
       });
+
+      // *** NEW SALE BUTTON LOGIC ***
+document.getElementById('newSaleBtn').addEventListener('click', function() {
+  // Redirect to vee.html instead of reloading
+  window.location.href = 'vee.html';
+});
+
       
       document.getElementById('generateBtn').addEventListener('click', function () {
         updateReceiptPreview();
@@ -489,13 +490,7 @@
           .then(res => res.json())
           .then(res => {
             console.log('✅ Saved to SheetDB:', res);
-            const currentValue = receiptInput.value;
-            const match = currentValue.match(/VPL-(\d{4})-(\d{3})/);
-            if (match) {
-              const year = match[1];
-              const num = parseInt(match[2]) + 1;
-              receiptInput.value = `VPL-${year}-${num.toString().padStart(3, '0')}`;
-            }
+            fetchLastReceiptNumber();
             alert('✅ Receipt saved Successfully!');
           })
           .catch(err => {
