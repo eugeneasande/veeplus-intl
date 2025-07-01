@@ -5,19 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>VEE PLUS INTERNATIONAL LIMITED - Official Receipt</title>
   
-  <script>
-    const token = localStorage.getItem('token');
-    const issuedAt = parseInt(localStorage.getItem('tokenIssuedAt'), 10);
-    const now = Date.now();
-    const expired = !token || !issuedAt || (now - issuedAt > 15 * 60 * 1000);
-
-    if (expired) {
-      localStorage.clear();
-      // Using console.error instead of alert for better user experience
-      console.error("Session expired. Please log in again.");
-      window.location.href = "index.html";
-    }
-  </script>
+  
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
