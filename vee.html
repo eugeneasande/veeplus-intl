@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>VEE-PLUS Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VEE PLUS INTERNATIONAL LIMITED - Official Receipt</title>
   <script>
   const token = localStorage.getItem('token');
   const issuedAt = parseInt(localStorage.getItem('tokenIssuedAt'), 10);
@@ -17,434 +18,569 @@
   }
 </script>
 
+  
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
     body {
       font-family: 'Poppins', sans-serif;
       background-color: #f8fafc;
     }
-    .pagination-btn.active {
-      background-color: #EFF6FF;
-      border-color: #3B82F6;
-      color: #3B82F6;
+    .receipt-container {
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      overflow: hidden;
     }
+    .receipt-header {
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    }
+    .receipt-line {
+      border-bottom: 1px dashed #e2e8f0;
+    }
+    .receipt-total {
+      background-color: #f1f5f9;
+    }
+    .watermark {
+      position: absolute; opacity: 0.1; font-size: 120px;
+      font-weight: bold; color: #3b82f6;
+      transform: rotate(-30deg); z-index: 0; pointer-events: none;
+    }
+    .loader {
+      border: 2px solid #f3f3f3; border-top: 2px solid #3498db;
+      border-radius: 50%; width: 16px; height: 16px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    @media print { .no-print { display: none !important; } body { background-color: white; } .receipt-container { box-shadow: none; border-radius: 0; } }
+    @media (max-width: 768px) { .watermark { font-size: 60px; } .item-row { padding: 1rem; margin-bottom: 0.5rem; } .receipt-line { padding: 0.75rem 0; } .receipt-line > div { margin-bottom: 0.25rem; } }
   </style>
 </head>
-<body class="min-h-screen bg-gray-100">
-  <!-- Admin Header -->
-  <header class="bg-white shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between items-center py-4 border-b border-gray-200">
-        <div class="flex items-center space-x-4">
-          <button class="md:hidden text-gray-500" id="mobileMenuButton">
-            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-          <h1 class="text-xl font-semibold text-gray-900">VEE-PLUS Admin</h1>
-          <nav class="hidden md:flex space-x-8" id="mainNav">
-            <a href="#" class="text-blue-600 border-b-2 border-blue-600 px-1 pb-2 text-sm font-medium">Receipts</a>
-            <a href="#" class="text-gray-500 hover:text-gray-700 px-1 pb-2 text-sm font-medium">Reports</a>
-            <a href="#" class="text-gray-500 hover:text-gray-700 px-1 pb-2 text-sm font-medium">Users</a>
-          </nav>
-        </div>
-        <div class="flex items-center space-x-4">
-          <div class="relative">
-            <button class="p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none">
-              <span class="sr-only">Notifications</span>
-              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-              </svg>
-            </button>
-          </div>
-          <div class="flex items-center">
-            <div class="ml-3">
-              <p class="text-sm font-medium text-gray-700">Admin User</p>
-              <p class="text-xs font-medium text-gray-500">Administrator</p>
-            </div>
-          </div>
-        </div>
-      </div>
+<body class="min-h-screen bg-gray-50">
+  <div class="container mx-auto px-4 py-8 overflow-x-auto">
+    <div class="text-center mb-8">
+      <h1 class="text-3xl md:text-4xl font-bold text-blue-600 mb-2">VEE PLUS INTERNATIONAL</h1>
+      <p class="text-gray-600">VEE PLUS INTERNATIONAL Electronic  Receipt Generator</p>
     </div>
-  </header>
 
-  <!-- Main Content -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold text-gray-900">Receipt Records</h1>
-      <div class="flex space-x-3">
-        <div class="relative inline-block text-left">
+    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-6">
+      <!-- Receipt Form -->
+      <div class="bg-white rounded-lg shadow-md p-6 lg:col-span-2 no-print">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Receipt Details</h2>
+
+        <div class="space-y-4">
+          
+          <!-- AI CAPTURE SECTION -->
+          <div class="mb-4 p-3 border border-dashed border-gray-300 rounded-lg">
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              <i class="fas fa-camera-retro mr-2"></i>Capture Sales Data from Photo
+            </label>
+            <input id="photoInput" type="file" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer" />
+            <div id="ocrStatus" class="text-xs text-gray-500 mt-2 h-4 flex items-center"></div>
+          </div>
+          <!-- END AI CAPTURE SECTION -->
+
           <div>
-            <button type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" id="export-menu-button" aria-expanded="false" aria-haspopup="true">
-              Export
-              <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-              </svg>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Customer Name</label>
+            <input id="customerName" type="text" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+            <input id="customerPhone" type="tel" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+          </div>
+
+          <!-- ID NUMBER FIELD WITH CAPTURE BUTTON -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">ID Number</label>
+            <div class="flex items-center gap-2">
+              <input id="customerId" type="text" class="flex-grow w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+              <label for="idCaptureInput" class="flex-shrink-0 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-3 rounded-md cursor-pointer transition">
+                <i class="fas fa-id-card"></i>
+              </label>
+              <input id="idCaptureInput" type="file" accept="image/*" class="hidden" />
+            </div>
+            <div id="idOcrStatus" class="text-xs text-gray-500 mt-1 h-4 flex items-center"></div>
+          </div>
+          <!-- END ID NUMBER FIELD -->
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Receipt No.</label>
+            <input id="receiptNumber" type="text" value="1" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+            <input id="receiptDate" type="date" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
+            <select id="paymentMethod" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            <option>Mobile Money</option> 
+              <option>Cash</option>
+              <option>Bank Transfer</option>
+              <option>Credit Card</option>
+              <option>Cheque</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">User</label>
+            <input id="user" type="text" value="purity" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+          </div>
+
+          <div class="pt-4">
+            <h3 class="font-medium text-gray-700 mb-2">Items</h3>
+            <div id="itemsContainer" class="space-y-3"></div>
+            <button id="addItemBtn" class="mt-3 w-full flex items-center justify-center py-2 px-4 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition">
+              <i class="fas fa-plus mr-2"></i> Add Item
             </button>
           </div>
-          <div class="hidden origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="export-menu-button" tabindex="-1" id="export-menu">
-            <div class="py-1" role="none">
-                <a href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100 text-right" role="menuitem" tabindex="-1" id="export-excel">Export to Excel</a>
-                <a href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100 text-right" role="menuitem" tabindex="-1" id="export-pdf">Export to PDF</a>
-                
-            </div>
+
+          <div class="pt-4">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+            <textarea id="notes" rows="2" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+          </div>
+
+          <div class="flex flex-wrap gap-3 pt-4">
+            <button id="generateBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md font-medium transition flex items-center justify-center">
+              <i class="fas fa-receipt mr-2"></i> Generate
+            </button>
+            <button id="printBtn" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-md font-medium transition flex items-center justify-center no-print">
+              <i class="fas fa-print mr-2"></i> Print
+            </button>
+            <button id="downloadBtn" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md font-medium transition flex items-center justify-center no-print">
+              <i class="fas fa-download mr-2"></i> Download Image
+            </button>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
-        <div class="flex flex-wrap md:flex-nowrap items-center justify-between gap-3 mb-4">
-            <!-- Search Input -->
-            <div class="relative">
-              <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
-                <svg class="h-4 w-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
-                </svg>
+      <!-- Receipt Preview -->
+      <div class="lg:col-span-3">
+        <div id="receiptPreview" class="receipt-container bg-white relative overflow-visible">
+
+          <div class="watermark">VEE-PLUS</div>
+
+          <div class="receipt-header text-white p-6 text-center">
+            <h2 class="text-2xl font-bold">VEE PLUS INTERNATIONAL LIMITED</h2>
+            <p class="text-blue-100 mt-1"></p>
+            <div class="mt-4 text-blue-100 text-sm">
+              <p>P.O. BOX 4550-40200, KISII</p>
+              <p>CELL: +254 710885228</p>
+              <P>PIN: P052269840L</P>
+            </div>
+          </div>
+
+          <div class="p-6">
+            <div class="flex justify-between mb-6">
+              <div>
+                <p class="text-gray-500 text-sm">Receipt No:</p>
+                <p id="previewReceiptNo" class="font-medium">1</p>
               </div>
-              <input type="text" id="searchInput"
-                class="pl-7 pr-3 py-1.5 border border-gray-300 rounded-md text-sm w-44 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400"
-                placeholder="Search..." />
+              <div class="text-right">
+                <p class="text-gray-500 text-sm">Date:</p>
+                <p id="previewDate" class="font-medium">June 26, 2025</p>
+                <p class="text-gray-500 text-sm">Time:</p>
+                <p id="previewTime" class="font-medium">12:00:00 PM</p>
+              </div>
             </div>
-          
-           
-            
+
+            <div class="mb-6">
+              <p class="text-gray-500 text-sm">Customer:</p>
+              <p id="previewCustomer" class="font-medium text-lg">John Doe</p>
+              <p id="previewPhone" class="text-gray-600">+254 700 000 000</p>
+              <p id="previewId" class="text-gray-600">ID: <span></span></p>
+            </div>
+
+            <div class="mb-2">
+              <p class="text-gray-500 text-sm">Payment Method:</p>
+              <p id="previewPaymentMethod" class="font-medium">Cash</p>
+            </div>
+
+            <div class="mb-2">
+              <p class="text-gray-500 text-sm">Served By:</p>
+              <p id="previewUser" class="font-medium">purity</p>
+            </div>
+
+            <div class="mt-8">
+              <div class="hidden md:grid grid-cols-12 gap-2 mb-2 font-medium text-gray-700 border-b pb-2">
+                <div class="col-span-4">Phone Model</div>
+                <div class="col-span-2">IMEI</div>
+                <div class="col-span-1 text-right">Qty</div>
+                <div class="col-span-2 text-right">Price</div>
+                <div class="col-span-3 text-right">Amount</div>
+              </div>
+              <div id="previewItems"></div>
+              <div class="mt-6" id="totalsContainer"></div>
+            </div>
+
+            <div class="mt-8 pt-4 border-t">
+              <p class="text-gray-500 text-sm mb-1">Notes:</p>
+              <p id="previewNotes" class="text-gray-700"></p>
+            </div>
+
+            <div class="mt-8 pt-4 border-t text-center text-sm text-gray-500">
+              <p>Goods Once Sold Cannot Be Re-Accepted!</p>
+            </div>
           </div>
-          
-          <span class="text-sm text-gray-500" id="showingText">Showing 1 to 10 of 100 entries</span>
-          <select class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md" id="perPageSelect">
-            <option value="10">10 per page</option>
-            <option value="25">25 per page</option>
-            <option value="50">50 per page</option>
-            <option value="100">100 per page</option>
-          </select>
         </div>
-      </div>
-      <div class="overflow-x-auto">
-        <div class="min-w-full overflow-x-auto" style="max-width: 100vw;">
-          <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-          <tr>
-            <th class="px-4 py-2">Name</th>
-            <th class="px-4 py-2">Phone</th>
-            <th class="px-4 py-2">Model</th>
-            <th class="px-4 py-2">IMEI</th>
-            <th class="px-4 py-2">Qty</th>
-            <th class="px-4 py-2">Price</th>
-            <th class="px-4 py-2">Amount</th>
-            <th class="px-4 py-2">Total</th>
-            <th class="px-4 py-2">Date</th>
-            <th class="px-4 py-2">Time</th>
-            <th class="px-4 py-2">User</th>
-          </tr>
-        </thead>
-        <tbody id="adminTableBody">
-          <!-- Data will be injected here -->
-        </tbody>
-          </table>
-        </div>
-      </div>
-      <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-          <div>
-            <p class="text-sm text-gray-700" id="paginationInfo">
-              Showing <span class="font-medium">1</span> to <span class="font-medium">10</span> of <span class="font-medium">100</span> results
-            </p>
-          </div>
-          <div>
-            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination" id="paginationNav">
-              <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50" id="prevPage">
-                <span class="sr-only">Previous</span>
-                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                  <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
-                </svg>
-              </a>
-              <!-- Page numbers will be injected here -->
-              <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 pagination-btn active" data-page="1"> 1 </a>
-              <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 pagination-btn" data-page="2"> 2 </a>
-              <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 pagination-btn" data-page="3"> 3 </a>
-              <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50" id="nextPage">
-                <span class="sr-only">Next</span>
-                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                  <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                </svg>
-              </a>
-            </nav>
-          </div>
+
+        <div class="mt-4 text-center text-gray-500 text-sm no-print">
+          <p>Preview will update automatically as you fill the form</p>
         </div>
       </div>
     </div>
-  </main>
+  </div>
 
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
   <script>
-    
-    // Mobile menu toggle
-    document.getElementById('mobileMenuButton').addEventListener('click', function() {
-      const nav = document.getElementById('mainNav');
-      nav.classList.toggle('hidden');
-      nav.classList.toggle('flex');
-      nav.classList.add('flex-col', 'absolute', 'top-16', 'left-0', 'right-0', 'bg-white', 'shadow-md', 'z-50', 'p-4', 'space-y-4');
-    });
+    document.addEventListener('DOMContentLoaded', function() {
+      
+      // --- GEMINI AI OCR FUNCTIONALITY START ---
+      const photoInput = document.getElementById('photoInput');
+      const ocrStatus = document.getElementById('ocrStatus');
+      const idCaptureInput = document.getElementById('idCaptureInput');
+      const idOcrStatus = document.getElementById('idOcrStatus');
 
-    // Export functionality
-    const exportMenuButton = document.getElementById('export-menu-button');
-    const exportMenu = document.getElementById('export-menu');
-    const exportExcel = document.getElementById('export-excel');
-    const exportPdf = document.getElementById('export-pdf');
+      // Helper function to convert a file to a Base64 string
+      const toBase64 = file => new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onload = () => resolve(reader.result.split(',')[1]);
+          reader.onerror = error => reject(error);
+      });
 
-    exportMenuButton.addEventListener('click', function() {
-      exportMenu.classList.toggle('hidden');
-    });
+      // --- Handler for Sales Data Photo ---
+      photoInput.addEventListener('change', async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
 
+        ocrStatus.innerHTML = '<div class="loader mr-2"></div> Calling AI for sales data...';
+        
+        try {
+          const base64ImageData = await toBase64(file);
+          const prompt = "Analyze this image of a sales record. Extract the 'Client name', 'Phone#', 'Price', 'Model', and 'IMEI#'. Provide the response as a clean JSON object with the keys: 'clientName', 'phone', 'price', 'model', 'imei'.";
+          
+          const payload = {
+              contents: [{ parts: [ { text: prompt }, { inline_data: { mime_type: file.type, data: base64ImageData } } ] }],
+              generation_config: {
+                  response_mime_type: "application/json",
+                  response_schema: {
+                      type: "OBJECT",
+                      properties: {
+                          "clientName": { "type": "STRING" }, "phone": { "type": "STRING" },
+                          "price": { "type": "STRING" }, "model": { "type": "STRING" }, "imei": { "type": "STRING" }
+                      }
+                  }
+              }
+          };
 
-    exportExcel.addEventListener('click', function(e) {
-      e.preventDefault();
-      const now = new Date();
-      const dateStr = now.toISOString().split('T')[0];
-      const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '-');
-      
-      const worksheet = XLSX.utils.json_to_sheet(filteredData);
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Receipts");
-      XLSX.writeFile(workbook, `receipts_export_${dateStr}_${timeStr}.xlsx`);
-      exportMenu.classList.add('hidden');
-    });
+          const result = await callGeminiApi(payload);
+          populateSalesForm(result);
+          ocrStatus.textContent = '✅ AI captured sales data!';
 
-    exportPdf.addEventListener('click', function(e) {
-      e.preventDefault();
-      const now = new Date();
-      const dateStr = now.toISOString().split('T')[0];
-      const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '-');
-      
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      
-      // Add title
-      doc.setFontSize(18);
-      doc.text('Receipts Export', 14, 22);
-      
-      // Add date
-      doc.setFontSize(12);
-      doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 32);
-      
-      // Add search term if any
-      if (searchInput.value) {
-        doc.setFontSize(10);
-        doc.text(`Filtered by: "${searchInput.value}"`, 14, 42);
-      }
-      
-      // Add table
-      doc.autoTable({
-        head: [['Name', 'Phone', 'Model', 'IMEI', 'Qty', 'Price', 'Amount', 'Total', 'Date', 'Time', 'User']],
-        body: filteredData.map(item => [
-          item.name || '',
-          item.phone || '',
-          item.model || '',
-          item.imei || '',
-          item.qty || '',
-          'Ksh' + (parseFloat(item.price || 0).toLocaleString()),
-          'Ksh' + (parseFloat(item.amount || 0).toLocaleString()),
-          'Ksh' + (parseFloat(item.total || 0).toLocaleString()),
-          item.date || '',
-          item.time || '',
-          item.user || ''
-        ]),
-        startY: 40,
-        styles: {
-          fontSize: 8,
-          cellPadding: 1
-        },
-        headStyles: {
-          fillColor: [59, 130, 246],
-          textColor: 255
+        } catch (error) {
+          console.error("Sales AI OCR Error:", error);
+          ocrStatus.textContent = `❌ Error: ${error.message}`;
+        } finally {
+            setTimeout(() => { ocrStatus.innerHTML = ''; }, 5000);
+            event.target.value = ''; 
         }
       });
-      
-      doc.save(`receipts_export_${dateStr}_${timeStr}.pdf`);
-      exportMenu.classList.add('hidden');
-    });
 
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function(event) {
-      if (!exportMenu.contains(event.target) && !exportMenuButton.contains(event.target)) {
-        exportMenu.classList.add('hidden');
-      }
-    });
+      // --- Handler for ID Card Photo ---
+      idCaptureInput.addEventListener('change', async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
 
-    // Pagination and Search functionality
-    let allData = [];
-    let filteredData = [];
-    let currentPage = 1;
-    let itemsPerPage = 10;
-    const searchInput = document.getElementById('searchInput');
-    const perPageSelect = document.getElementById('perPageSelect');
-    const paginationInfo = document.getElementById('paginationInfo');
-    const paginationNav = document.getElementById('paginationNav');
-    const prevPageBtn = document.getElementById('prevPage');
-    const nextPageBtn = document.getElementById('nextPage');
-    const showingText = document.getElementById('showingText');
+        idOcrStatus.innerHTML = '<div class="loader mr-2"></div> Calling AI for ID Number...';
+        
+        try {
+          const base64ImageData = await toBase64(file);
+          const prompt = "Analyze this image of a Kenyan National ID card. Extract only the ID Number. The ID Number is the large number below the 'ID NUMBER' label. Provide the response as a clean JSON object with a single key: 'idNumber'.";
+          
+          const payload = {
+              contents: [{ parts: [ { text: prompt }, { inline_data: { mime_type: file.type, data: base64ImageData } } ] }],
+              generation_config: {
+                  response_mime_type: "application/json",
+                  response_schema: {
+                      type: "OBJECT",
+                      properties: { "idNumber": { "type": "STRING" } }
+                  }
+              }
+          };
 
-    // Initialize pagination
-    function initPagination() {
-      // Clear existing page buttons (except prev/next)
-      const existingPageBtns = document.querySelectorAll('.pagination-btn');
-      existingPageBtns.forEach(btn => btn.remove());
-      
-      const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-      const maxVisiblePages = 5; // Maximum number of page buttons to show
-      let startPage, endPage;
-      
-      if (totalPages <= maxVisiblePages) {
-        // Show all pages if total pages is less than max visible pages
-        startPage = 1;
-        endPage = totalPages;
-      } else {
-        // Calculate start and end pages to show
-        if (currentPage <= Math.ceil(maxVisiblePages / 2)) {
-          startPage = 1;
-          endPage = maxVisiblePages;
-        } else if (currentPage + Math.floor(maxVisiblePages / 2) >= totalPages) {
-          startPage = totalPages - maxVisiblePages + 1;
-          endPage = totalPages;
-        } else {
-          startPage = currentPage - Math.floor(maxVisiblePages / 2);
-          endPage = currentPage + Math.floor(maxVisiblePages / 2);
+          const result = await callGeminiApi(payload);
+          if (result.idNumber) {
+            document.getElementById('customerId').value = result.idNumber.replace(/\s/g, '');
+            updateReceiptPreview();
+          }
+          idOcrStatus.textContent = '✅ AI captured ID Number!';
+
+        } catch (error) {
+          console.error("ID AI OCR Error:", error);
+          idOcrStatus.textContent = `❌ Error: ${error.message}`;
+        } finally {
+            setTimeout(() => { idOcrStatus.innerHTML = ''; }, 5000);
+            event.target.value = ''; 
         }
-      }
-      
-      // Create page buttons
-      for (let i = startPage; i <= endPage; i++) {
-        const pageBtn = document.createElement('a');
-        pageBtn.href = '#';
-        pageBtn.className = `relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 pagination-btn ${i === currentPage ? 'active' : ''}`;
-        pageBtn.dataset.page = i;
-        pageBtn.textContent = i;
-        pageBtn.addEventListener('click', function(e) {
-          e.preventDefault();
-          goToPage(parseInt(this.dataset.page));
+      });
+
+      // --- Central Gemini API Call Function ---
+      async function callGeminiApi(payload) {
+        const PROXY_URL = "https://gemini-proxy-server-7qvm.onrender.com/gemini-proxy"; 
+
+        const response = await fetch(PROXY_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
         });
         
-        // Insert before next button
-        nextPageBtn.parentNode.insertBefore(pageBtn, nextPageBtn);
-      }
-      
-      // Update pagination info
-      const startItem = (currentPage - 1) * itemsPerPage + 1;
-      const endItem = Math.min(currentPage * itemsPerPage, filteredData.length);
-      paginationInfo.innerHTML = `Showing <span class="font-medium">${startItem}</span> to <span class="font-medium">${endItem}</span> of <span class="font-medium">${filteredData.length}</span> results`;
-      showingText.textContent = `Showing ${startItem} to ${endItem} of ${filteredData.length} entries`;
-      
-      // Disable prev/next buttons when appropriate
-      prevPageBtn.classList.toggle('opacity-50 cursor-not-allowed', currentPage === 1);
-      nextPageBtn.classList.toggle('opacity-50 cursor-not-allowed', currentPage === totalPages);
-    }
-
-    function goToPage(page) {
-      if (page < 1 || page > Math.ceil(filteredData.length / itemsPerPage)) return;
-      
-      currentPage = page;
-      renderTable();
-      initPagination();
-      
-      // Scroll to top of table
-      document.querySelector('table').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function renderTable() {
-      const table = document.getElementById("adminTableBody");
-      table.innerHTML = "";
-
-      const startIndex = (currentPage - 1) * itemsPerPage;
-      const endIndex = startIndex + itemsPerPage;
-      const paginatedData = filteredData.slice(startIndex, endIndex);
-
-      paginatedData.forEach(entry => {
-        const row = `
-          <tr class="hover:bg-gray-50">
-            <td class="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900">${entry.name || ''}</td>
-            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">${entry.phone || ''}</td>
-            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">${entry.model || ''}</td>
-            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">${entry.imei || ''}</td>
-            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">${entry.qty || ''}</td>
-            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">Ksh${parseFloat(entry.price || 0).toLocaleString()}</td>
-            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">Ksh${parseFloat(entry.amount || 0).toLocaleString()}</td>
-            <td class="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900">Ksh${parseFloat(entry.total || 0).toLocaleString()}</td>
-            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">${entry.date || ''}</td>
-            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">${entry.time || ''}</td>
-            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
-              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">${entry.user || ''}</span>
-            </td>
-          </tr>
-        `;
-        table.insertAdjacentHTML("beforeend", row);
-      });
-    }
-
-    // Search functionality
-    searchInput.addEventListener('input', function(e) {
-      const searchTerm = e.target.value.toLowerCase();
-      filteredData = allData.filter(entry => {
-        const entryValues = [
-          entry.name || '',
-          entry.phone || '',
-          entry.model || '',
-          entry.imei || '',
-          entry.qty || '',
-          entry.price || '',
-          entry.amount || '',
-          entry.total || '',
-          entry.date || '',
-          entry.time || '',
-          entry.user || ''
-        ].map(v => v.toString().toLowerCase());
+        if (!response.ok) {
+            const errorResult = await response.json();
+            throw new Error(errorResult.error || `Proxy server error: ${response.statusText}`);
+        }
         
-        return entryValues.some(v => v.includes(searchTerm));
+        const result = await response.json();
+        return result;
+      }
+
+      function populateSalesForm(data) {
+        console.log("Populating form with:", data);
+        if (data.clientName) document.getElementById('customerName').value = data.clientName;
+        if (data.phone) document.getElementById('customerPhone').value = data.phone.replace(/\s/g, '');
+
+        let firstItemRow = document.querySelector('.item-row');
+        if (!firstItemRow) {
+            document.getElementById('addItemBtn').click();
+            firstItemRow = document.querySelector('.item-row');
+        }
+
+        if (firstItemRow) {
+          if (data.model) firstItemRow.querySelector('.item-desc').value = data.model.replace(/\s+/g, ' ');
+          if (data.price) firstItemRow.querySelector('.item-price').value = data.price.replace(/KES|,/g, '').trim();
+          if (data.imei) firstItemRow.querySelector('.item-imei').value = data.imei;
+        }
+        
+        updateReceiptPreview();
+      }
+      // --- GEMINI AI OCR FUNCTIONALITY END ---
+
+
+      // --- Your existing, working code ---
+      const receiptInput = document.getElementById('receiptNumber');
+      receiptInput.readOnly = true;
+      receiptInput.classList.add('bg-gray-100', 'cursor-not-allowed');
+      
+      async function fetchLastReceiptNumber() {
+        try {
+          const response = await fetch("https://sheetdb.io/api/v1/whim74m5dy6u6");
+          const data = await response.json();
+          const currentYear = new Date().getFullYear().toString();
+          let maxNum = 0;
+          data.forEach(entry => {
+            if (entry.receipt_no) {
+              const match = entry.receipt_no.match(/VPL-(\d{4})-(\d+)/);
+              if (match && match[1] === currentYear) {
+                const num = parseInt(match[2]);
+                if (num > maxNum) maxNum = num;
+              }
+            }
+          });
+          const nextNum = maxNum + 1;
+          receiptInput.value = `VPL-${currentYear}-${String(nextNum).padStart(3, '0')}`;
+        } catch (error) {
+          console.error("❌ Failed to fetch receipt number:", error);
+          receiptInput.value = `VPL-${new Date().getFullYear()}-001`;
+        }
+      }
+      
+      fetchLastReceiptNumber();
+      
+      const today = new Date();
+      document.getElementById('receiptDate').value = today.toISOString().split('T')[0];
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      document.getElementById('previewDate').textContent = today.toLocaleDateString('en-US', options);
+      
+      document.getElementById('addItemBtn').addEventListener('click', function() {
+          const itemId = Date.now();
+          const itemHtml = `
+              <div class="item-row bg-gray-50 p-3 rounded-md" data-id="${itemId}">
+                  <div class="grid grid-cols-1 md:grid-cols-12 gap-2">
+                      <div class="md:col-span-4"><input type="text" placeholder="Phone Model" class="item-desc w-full px-3 py-1 border border-gray-300 rounded text-sm"></div>
+                      <div class="md:col-span-2"><input type="text" placeholder="IMEI" class="item-imei w-full px-3 py-1 border border-gray-300 rounded text-sm"></div>
+                      <div class="md:col-span-1"><input type="number" placeholder="Qty" class="item-qty w-full px-3 py-1 border border-gray-300 rounded text-sm" value="1" min="1"></div>
+                      <div class="md:col-span-3"><input type="number" placeholder="Price" class="item-price w-full px-3 py-1 border border-gray-300 rounded text-sm" min="0" step="0.01"></div>
+                      <div class="md:col-span-2 flex items-center justify-end">
+                          <button class="remove-item text-red-500 hover:text-red-700"><i class="fas fa-times"></i></button>
+                      </div>
+                  </div>
+              </div>`;
+          document.getElementById('itemsContainer').insertAdjacentHTML('beforeend', itemHtml);
       });
       
-      currentPage = 1; // Reset to first page when searching
-      renderTable();
-      initPagination();
-    });
+      document.getElementById('itemsContainer').addEventListener('click', function (e) {
+        if (e.target.classList.contains('remove-item') || e.target.closest('.remove-item')) {
+          const itemRow = e.target.closest('.item-row');
+          if (itemRow) itemRow.remove(), updateReceiptPreview();
+        }
+      });
+      
+      const formInputs = ['customerName', 'customerPhone', 'customerId', 'receiptNumber', 'receiptDate', 'paymentMethod', 'user', 'notes'];
+      formInputs.forEach(id => document.getElementById(id).addEventListener('input', updateReceiptPreview));
+      
+      document.getElementById('itemsContainer').addEventListener('input', updateReceiptPreview);
+      
+      document.getElementById('printBtn').addEventListener('click', () => window.print());
+      
+      document.getElementById('downloadBtn').addEventListener('click', function () {
+        const receipt = document.getElementById('receiptPreview');
+        let customerName = document.getElementById('customerName').value.trim() || 'receipt';
+        customerName = customerName.replace(/[^a-z0-9]/gi, '_');
+        let imei = '';
+        const firstItem = document.querySelector('.item-imei');
+        if (firstItem && firstItem.value) imei = '_' + firstItem.value.replace(/[^a-z0-9]/gi, '');
 
-    // Items per page change
-    perPageSelect.addEventListener('change', function(e) {
-      itemsPerPage = parseInt(e.target.value);
-      currentPage = 1; // Reset to first page when changing items per page
-      renderTable();
-      initPagination();
-    });
+        html2canvas(receipt, {
+          scale: 2,
+          logging: false,
+          useCORS: true
+        }).then(canvas => {
+          const link = document.createElement('a');
+          link.download = `${customerName}${imei}_receipt.png`;
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+        });
+      });
+      
+      document.getElementById('generateBtn').addEventListener('click', function () {
+        updateReceiptPreview();
+        const items = [];
+        const itemRows = document.querySelectorAll('.item-row');
+        let total = 0;
 
-    // Previous/Next page buttons
-    prevPageBtn.addEventListener('click', function(e) {
-      e.preventDefault();
-      if (currentPage > 1) {
-        goToPage(currentPage - 1);
+        itemRows.forEach(row => {
+          const model = row.querySelector('.item-desc').value || 'Item';
+          const imei = row.querySelector('.item-imei').value || '';
+          const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+          const price = parseFloat(row.querySelector('.item-price').value) || 0;
+          const amount = qty * price;
+          total += amount;
+
+          items.push({ model, imei, qty, price, amount });
+        });
+
+        const receiptDate = document.getElementById('receiptDate').value;
+        const receiptTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+
+        fetch("https://sheetdb.io/api/v1/whim74m5dy6u6", {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            data: items.map(item => ({
+              name: document.getElementById('customerName').value,
+              phone: document.getElementById('customerPhone').value,
+              id: document.getElementById('customerId').value,
+              paymentMethod: document.getElementById('paymentMethod').value,
+              user: document.getElementById('user').value,
+              model: item.model,
+              imei: item.imei,
+              qty: item.qty,
+              price: item.price,
+              amount: item.amount,
+              total: total,
+              date: receiptDate,
+              time: receiptTime,
+              receipt_no: document.getElementById('receiptNumber').value
+            }))
+          })
+        })
+          .then(res => res.json())
+          .then(res => {
+            console.log('✅ Saved to SheetDB:', res);
+            const currentValue = receiptInput.value;
+            const match = currentValue.match(/VPL-(\d{4})-(\d{3})/);
+            if (match) {
+              const year = match[1];
+              const num = parseInt(match[2]) + 1;
+              receiptInput.value = `VPL-${year}-${num.toString().padStart(3, '0')}`;
+            }
+            alert('✅ Receipt saved Successfully!');
+          })
+          .catch(err => {
+            console.error('❌ Error saving to SheetDB:', err);
+            alert('❌ Failed to save receipt.');
+          });
+      });
+      
+      function updateReceiptPreview() {
+        document.getElementById('previewCustomer').textContent = document.getElementById('customerName').value || 'Customer Name';
+        document.getElementById('previewPhone').textContent = document.getElementById('customerPhone').value || 'Phone Number';
+        document.getElementById('previewId').querySelector('span').textContent = document.getElementById('customerId').value || 'Not provided';
+        document.getElementById('previewReceiptNo').textContent = document.getElementById('receiptNumber').value || 'VPL-2023-001';
+
+        const dateInput = document.getElementById('receiptDate').value;
+        const now = new Date();
+        if (dateInput) {
+          const date = new Date(dateInput);
+          document.getElementById('previewDate').textContent = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        }
+        document.getElementById('previewTime').textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+        document.getElementById('previewPaymentMethod').textContent = document.getElementById('paymentMethod').value;
+        document.getElementById('previewUser').textContent = document.getElementById('user').value || 'purity';
+        document.getElementById('previewNotes').textContent = document.getElementById('notes').value || '';
+
+        const itemsContainer = document.getElementById('previewItems');
+        itemsContainer.innerHTML = '';
+        let subtotal = 0;
+        const itemRows = document.querySelectorAll('.item-row');
+
+        itemRows.forEach(row => {
+          const desc = row.querySelector('.item-desc').value || 'Item';
+          const imei = row.querySelector('.item-imei').value || '';
+          const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+          const price = parseFloat(row.querySelector('.item-price').value) || 0;
+          const amount = qty * price;
+          subtotal += amount;
+
+          const itemHtml = `
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-2 py-3 receipt-line">
+              <div class="md:col-span-4 font-medium md:font-normal">${desc}</div>
+              <div class="md:col-span-2 text-sm text-gray-600 md:text-base md:text-gray-800">
+                <span class="md:hidden">IMEI: </span>${imei}
+              </div>
+              <div class="md:col-span-1 text-right"><span class="md:hidden">Qty: </span>${qty}</div>
+              <div class="md:col-span-2 text-right"><span class="md:hidden">Price: </span>Ksh${price.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</div>
+              <div class="md:col-span-3 text-right font-medium"><span class="md:hidden">Amount: </span>Ksh${amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</div>
+            </div>`;
+          itemsContainer.insertAdjacentHTML('beforeend', itemHtml);
+        });
+
+        if (itemRows.length === 0) {
+          itemsContainer.innerHTML = `
+            <div class="grid grid-cols-12 gap-2 py-3 receipt-line">
+              <div class="col-span-4">Service Fee</div>
+              <div class="col-span-2"></div>
+              <div class="col-span-1 text-right">1</div>
+              <div class="col-span-2 text-right">Ksh0.00</div>
+              <div class="col-span-3 text-right">Ksh0.00</div>
+            </div>`;
+        }
+
+        const totalsContainer = document.getElementById('totalsContainer');
+        totalsContainer.innerHTML = `
+          <div class="grid grid-cols-12 gap-2 py-3 receipt-total font-bold text-lg">
+            <div class="col-span-8">Gross Total</div>
+            <div class="col-span-4 text-right">Ksh${subtotal.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</div>
+          </div>`;
       }
+      
+      // Start with one item row
+      document.getElementById('addItemBtn').click();
     });
-
-    nextPageBtn.addEventListener('click', function(e) {
-      e.preventDefault();
-      if (currentPage < Math.ceil(filteredData.length / itemsPerPage)) {
-        goToPage(currentPage + 1);
-      }
-    });
-
-    async function loadAdminData() {
-      try {
-        const res = await fetch("https://sheetdb.io/api/v1/whim74m5dy6u6");
-        allData = await res.json();
-        filteredData = [...allData]; // Initialize filteredData with all data
-        renderTable();
-        initPagination();
-      } catch (err) {
-        console.error("❌ Failed to load data:", err);
-      }
-    }
-
-    document.addEventListener("DOMContentLoaded", loadAdminData);
   </script>
 </body>
 </html>
