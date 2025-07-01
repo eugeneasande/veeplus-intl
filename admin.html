@@ -100,68 +100,61 @@
     </div>
   </div>
 
-  <script>
-    document.addEventListener('keydown', function(e) {
-      if (e.keyCode === 123 || 
-          (e.ctrlKey && e.shiftKey && e.keyCode === 73) || 
-          (e.ctrlKey && e.shiftKey && e.keyCode === 74) || 
-          (e.ctrlKey && e.keyCode === 85)) {
-        e.preventDefault();
-      }
-    });
-
-    document.getElementById('loginForm').addEventListener('submit', function (e) {
+ <script>
+  document.addEventListener('keydown', function(e) {
+    if (e.keyCode === 123 || 
+        (e.ctrlKey && e.shiftKey && e.keyCode === 73) || 
+        (e.ctrlKey && e.shiftKey && e.keyCode === 74) || 
+        (e.ctrlKey && e.keyCode === 85)) {
       e.preventDefault();
-      const username = document.getElementById('username').value.trim().toLowerCase();
-      const password = document.getElementById('password').value.trim();
-      const errorMessage = document.getElementById('error-message');
-      const token = crypto.randomUUID();
-      const timestamp = Date.now();
+    }
+  });
 
-      if (username === 'purity' && password === 'Purity@12345') {
-        localStorage.setItem('token', token);
-        localStorage.setItem('tokenIssuedAt', timestamp);
-        localStorage.setItem('user', 'purity');
-        localStorage.setItem('role', 'agent');
-        window.location.href = 'vee.html';
-      } else if (username === 'admin' && password === 'Admin@12345') {
-        localStorage.setItem('token', token);
-        localStorage.setItem('tokenIssuedAt', timestamp);
-        localStorage.setItem('user', 'admin');
-        localStorage.setItem('role', 'admin');
-        window.location.href = 'admin.html';
-      } else if (username === 'eugene' && password === 'waterbottle') {
-        localStorage.setItem('token', token);
-        localStorage.setItem('tokenIssuedAt', timestamp);
-        localStorage.setItem('user', 'eugene');
-        localStorage.setItem('role', 'agent');
-        window.location.href = 'vee.html';
-      } else {
-        errorMessage.textContent = 'Invalid username or password.';
-        errorMessage.classList.remove('hidden');
-        errorMessage.style.animation = 'shake 0.5s';
-        setTimeout(() => errorMessage.style.animation = '', 500);
-      }
-    });
+  document.getElementById('loginForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const username = document.getElementById('username').value.trim().toLowerCase();
+    const password = document.getElementById('password').value.trim();
+    const errorMessage = document.getElementById('error-message');
 
-    const togglePassword = document.getElementById('togglePassword');
-    const passwordInput = document.getElementById('password');
-    togglePassword.addEventListener('click', function() {
-      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-      passwordInput.setAttribute('type', type);
-      this.querySelector('i').classList.toggle('fa-eye');
-      this.querySelector('i').classList.toggle('fa-eye-slash');
-    });
+    if (username === 'purity' && password === 'Purity@12345') {
+      localStorage.setItem('user', 'purity');
+      localStorage.setItem('role', 'agent');
+      window.location.href = 'vee.html';
+    } else if (username === 'admin' && password === 'Admin@12345') {
+      localStorage.setItem('user', 'admin');
+      localStorage.setItem('role', 'admin');
+      window.location.href = 'admin.html';
+    } else if (username === 'eugene' && password === 'waterbottle') {
+      localStorage.setItem('user', 'eugene');
+      localStorage.setItem('role', 'agent');
+      window.location.href = 'vee.html';
+    } else {
+      errorMessage.textContent = 'Invalid username or password.';
+      errorMessage.classList.remove('hidden');
+      errorMessage.style.animation = 'shake 0.5s';
+      setTimeout(() => errorMessage.style.animation = '', 500);
+    }
+  });
 
-    const style = document.createElement('style');
-    style.textContent = `
-      @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-        20%, 40%, 60%, 80% { transform: translateX(5px); }
-      }
-    `;
-    document.head.appendChild(style);
-  </script>
+  const togglePassword = document.getElementById('togglePassword');
+  const passwordInput = document.getElementById('password');
+  togglePassword.addEventListener('click', function() {
+    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+    passwordInput.setAttribute('type', type);
+    this.querySelector('i').classList.toggle('fa-eye');
+    this.querySelector('i').classList.toggle('fa-eye-slash');
+  });
+
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+      20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+  `;
+  document.head.appendChild(style);
+</script>
+
 </body>
 </html>
