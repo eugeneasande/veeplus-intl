@@ -1,160 +1,438 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VEE PLUS INTERNATIONAL LIMITED</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>VEE-PLUS Admin Panel</title>
+  
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
   <style>
-    .bg-veeplus {
-      background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-    }
-    .login-box {
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    }
-    .input-field {
-      transition: all 0.3s ease;
-    }
-    .input-field:focus {
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
-    }
     body {
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
+      font-family: 'Poppins', sans-serif;
+      background-color: #f8fafc;
+    }
+    .pagination-btn.active {
+      background-color: #EFF6FF;
+      border-color: #3B82F6;
+      color: #3B82F6;
     }
   </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4" oncontextmenu="return false">
-  <div class="max-w-md w-full bg-white rounded-xl overflow-hidden login-box">
-    <div class="bg-veeplus py-6 px-8 text-center">
-      <div class="flex justify-center mb-4">
-        <div class="bg-white p-3 rounded-full">
-          <i class="fas fa-building text-blue-800 text-3xl"></i>
+<body class="min-h-screen bg-gray-100">
+  <!-- Admin Header -->
+  <header class="bg-white shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-4 border-b border-gray-200">
+        <div class="flex items-center space-x-4">
+          <button class="md:hidden text-gray-500" id="mobileMenuButton">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <h1 class="text-xl font-semibold text-gray-900">VEE-PLUS Admin</h1>
+          <nav class="hidden md:flex space-x-8" id="mainNav">
+            <a href="#" class="text-blue-600 border-b-2 border-blue-600 px-1 pb-2 text-sm font-medium">Receipts</a>
+            <a href="#" class="text-gray-500 hover:text-gray-700 px-1 pb-2 text-sm font-medium">Reports</a>
+            <a href="#" class="text-gray-500 hover:text-gray-700 px-1 pb-2 text-sm font-medium">Users</a>
+          </nav>
         </div>
-      </div>
-      <h1 class="text-2xl font-bold text-white">VEE PLUS INTERNATIONAL LIMITED</h1>
-      <p class="text-blue-200 mt-1">Secure Enterprise Portal</p>
-    </div>
-
-    <div class="px-8 py-6">
-      <div id="error-message" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4"></div>
-
-      <form id="loginForm" class="space-y-6">
-        <div>
-          <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+        <div class="flex items-center space-x-4">
           <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <i class="fas fa-user text-gray-400"></i>
-            </div>
-            <input type="text" id="username" name="username" class="input-field pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 px-3 border" placeholder="Enter username">
-          </div>
-        </div>
-
-        <div>
-          <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-          <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <i class="fas fa-lock text-gray-400"></i>
-            </div>
-            <input type="password" id="password" name="password" class="input-field pl-10 pr-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 px-3 border" placeholder="Enter password">
-            <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
-              <i class="fas fa-eye"></i>
+            <button class="p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none">
+              <span class="sr-only">Notifications</span>
+              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
             </button>
           </div>
-        </div>
-
-        <div class="flex items-center justify-between">
           <div class="flex items-center">
-            <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">Remember Me
+            <div class="ml-3">
+              <p class="text-sm font-medium text-gray-700">Admin User</p>
+              <p class="text-xs font-medium text-gray-500">Administrator</p>
+            </div>
           </div>
-        </div>
-
-        <div>
-          <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
-            Sign in
-            <i class="fas fa-arrow-right ml-2"></i>
-          </button>
-        </div>
-      </form>
-
-      <div class="mt-6">
-        <div class="relative">
-          <div class="absolute inset-0 flex items-center">
-            <div class="w-full border-t border-gray-300"></div>
-          </div>
-          <div class="relative flex justify-center text-sm">
-            <span class="px-2 bg-white text-gray-500">Need help?</span>
-          </div>
-        </div>
-
-        <div class="mt-4 text-center">
-          <p class="text-sm text-gray-600">
-            Contact IT support at
-            <a href="mailto:eugeneasande@icloud.com" class="font-medium text-blue-600 hover:text-blue-500">IT@VeePlus</a>
-          </p>
         </div>
       </div>
     </div>
-  </div>
+  </header>
 
- <script>
-  document.addEventListener('keydown', function(e) {
-    if (e.keyCode === 123 || 
-        (e.ctrlKey && e.shiftKey && e.keyCode === 73) || 
-        (e.ctrlKey && e.shiftKey && e.keyCode === 74) || 
-        (e.ctrlKey && e.keyCode === 85)) {
+  <!-- Main Content -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-bold text-gray-900">Receipt Records</h1>
+      <div class="flex space-x-3">
+        <div class="relative inline-block text-left">
+          <div>
+            <button type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" id="export-menu-button" aria-expanded="false" aria-haspopup="true">
+              Export
+              <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </button>
+          </div>
+          <div class="hidden origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="export-menu-button" tabindex="-1" id="export-menu">
+            <div class="py-1" role="none">
+                <a href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100 text-right" role="menuitem" tabindex="-1" id="export-excel">Export to Excel</a>
+                <a href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100 text-right" role="menuitem" tabindex="-1" id="export-pdf">Export to PDF</a>
+                
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+        <div class="flex flex-wrap md:flex-nowrap items-center justify-between gap-3 mb-4">
+            <!-- Search Input -->
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+                <svg class="h-4 w-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+              <input type="text" id="searchInput"
+                class="pl-7 pr-3 py-1.5 border border-gray-300 rounded-md text-sm w-44 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400"
+                placeholder="Search..." />
+            </div>
+          
+           
+            
+          </div>
+          
+          <span class="text-sm text-gray-500" id="showingText">Showing 1 to 10 of 100 entries</span>
+          <select class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md" id="perPageSelect">
+            <option value="10">10 per page</option>
+            <option value="25">25 per page</option>
+            <option value="50">50 per page</option>
+            <option value="100">100 per page</option>
+          </select>
+        </div>
+      </div>
+      <div class="overflow-x-auto">
+        <div class="min-w-full overflow-x-auto" style="max-width: 100vw;">
+          <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+          <tr>
+            <th class="px-4 py-2">Name</th>
+            <th class="px-4 py-2">Phone</th>
+            <th class="px-4 py-2">Model</th>
+            <th class="px-4 py-2">IMEI</th>
+            <th class="px-4 py-2">Qty</th>
+            <th class="px-4 py-2">Price</th>
+            <th class="px-4 py-2">Amount</th>
+            <th class="px-4 py-2">Total</th>
+            <th class="px-4 py-2">Date</th>
+            <th class="px-4 py-2">Time</th>
+            <th class="px-4 py-2">User</th>
+          </tr>
+        </thead>
+        <tbody id="adminTableBody">
+          <!-- Data will be injected here -->
+        </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+          <div>
+            <p class="text-sm text-gray-700" id="paginationInfo">
+              Showing <span class="font-medium">1</span> to <span class="font-medium">10</span> of <span class="font-medium">100</span> results
+            </p>
+          </div>
+          <div>
+            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination" id="paginationNav">
+              <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50" id="prevPage">
+                <span class="sr-only">Previous</span>
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+              </a>
+              <!-- Page numbers will be injected here -->
+              <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 pagination-btn active" data-page="1"> 1 </a>
+              <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 pagination-btn" data-page="2"> 2 </a>
+              <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 pagination-btn" data-page="3"> 3 </a>
+              <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50" id="nextPage">
+                <span class="sr-only">Next</span>
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                </svg>
+              </a>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    
+    // Mobile menu toggle
+    document.getElementById('mobileMenuButton').addEventListener('click', function() {
+      const nav = document.getElementById('mainNav');
+      nav.classList.toggle('hidden');
+      nav.classList.toggle('flex');
+      nav.classList.add('flex-col', 'absolute', 'top-16', 'left-0', 'right-0', 'bg-white', 'shadow-md', 'z-50', 'p-4', 'space-y-4');
+    });
+
+    // Export functionality
+    const exportMenuButton = document.getElementById('export-menu-button');
+    const exportMenu = document.getElementById('export-menu');
+    const exportExcel = document.getElementById('export-excel');
+    const exportPdf = document.getElementById('export-pdf');
+
+    exportMenuButton.addEventListener('click', function() {
+      exportMenu.classList.toggle('hidden');
+    });
+
+
+    exportExcel.addEventListener('click', function(e) {
       e.preventDefault();
+      const now = new Date();
+      const dateStr = now.toISOString().split('T')[0];
+      const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '-');
+      
+      const worksheet = XLSX.utils.json_to_sheet(filteredData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Receipts");
+      XLSX.writeFile(workbook, `receipts_export_${dateStr}_${timeStr}.xlsx`);
+      exportMenu.classList.add('hidden');
+    });
+
+    exportPdf.addEventListener('click', function(e) {
+      e.preventDefault();
+      const now = new Date();
+      const dateStr = now.toISOString().split('T')[0];
+      const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '-');
+      
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      
+      // Add title
+      doc.setFontSize(18);
+      doc.text('Receipts Export', 14, 22);
+      
+      // Add date
+      doc.setFontSize(12);
+      doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 32);
+      
+      // Add search term if any
+      if (searchInput.value) {
+        doc.setFontSize(10);
+        doc.text(`Filtered by: "${searchInput.value}"`, 14, 42);
+      }
+      
+      // Add table
+      doc.autoTable({
+        head: [['Name', 'Phone', 'Model', 'IMEI', 'Qty', 'Price', 'Amount', 'Total', 'Date', 'Time', 'User']],
+        body: filteredData.map(item => [
+          item.name || '',
+          item.phone || '',
+          item.model || '',
+          item.imei || '',
+          item.qty || '',
+          'Ksh' + (parseFloat(item.price || 0).toLocaleString()),
+          'Ksh' + (parseFloat(item.amount || 0).toLocaleString()),
+          'Ksh' + (parseFloat(item.total || 0).toLocaleString()),
+          item.date || '',
+          item.time || '',
+          item.user || ''
+        ]),
+        startY: 40,
+        styles: {
+          fontSize: 8,
+          cellPadding: 1
+        },
+        headStyles: {
+          fillColor: [59, 130, 246],
+          textColor: 255
+        }
+      });
+      
+      doc.save(`receipts_export_${dateStr}_${timeStr}.pdf`);
+      exportMenu.classList.add('hidden');
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+      if (!exportMenu.contains(event.target) && !exportMenuButton.contains(event.target)) {
+        exportMenu.classList.add('hidden');
+      }
+    });
+
+    // Pagination and Search functionality
+    let allData = [];
+    let filteredData = [];
+    let currentPage = 1;
+    let itemsPerPage = 10;
+    const searchInput = document.getElementById('searchInput');
+    const perPageSelect = document.getElementById('perPageSelect');
+    const paginationInfo = document.getElementById('paginationInfo');
+    const paginationNav = document.getElementById('paginationNav');
+    const prevPageBtn = document.getElementById('prevPage');
+    const nextPageBtn = document.getElementById('nextPage');
+    const showingText = document.getElementById('showingText');
+
+    // Initialize pagination
+    function initPagination() {
+      // Clear existing page buttons (except prev/next)
+      const existingPageBtns = document.querySelectorAll('.pagination-btn');
+      existingPageBtns.forEach(btn => btn.remove());
+      
+      const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+      const maxVisiblePages = 5; // Maximum number of page buttons to show
+      let startPage, endPage;
+      
+      if (totalPages <= maxVisiblePages) {
+        // Show all pages if total pages is less than max visible pages
+        startPage = 1;
+        endPage = totalPages;
+      } else {
+        // Calculate start and end pages to show
+        if (currentPage <= Math.ceil(maxVisiblePages / 2)) {
+          startPage = 1;
+          endPage = maxVisiblePages;
+        } else if (currentPage + Math.floor(maxVisiblePages / 2) >= totalPages) {
+          startPage = totalPages - maxVisiblePages + 1;
+          endPage = totalPages;
+        } else {
+          startPage = currentPage - Math.floor(maxVisiblePages / 2);
+          endPage = currentPage + Math.floor(maxVisiblePages / 2);
+        }
+      }
+      
+      // Create page buttons
+      for (let i = startPage; i <= endPage; i++) {
+        const pageBtn = document.createElement('a');
+        pageBtn.href = '#';
+        pageBtn.className = `relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 pagination-btn ${i === currentPage ? 'active' : ''}`;
+        pageBtn.dataset.page = i;
+        pageBtn.textContent = i;
+        pageBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          goToPage(parseInt(this.dataset.page));
+        });
+        
+        // Insert before next button
+        nextPageBtn.parentNode.insertBefore(pageBtn, nextPageBtn);
+      }
+      
+      // Update pagination info
+      const startItem = (currentPage - 1) * itemsPerPage + 1;
+      const endItem = Math.min(currentPage * itemsPerPage, filteredData.length);
+      paginationInfo.innerHTML = `Showing <span class="font-medium">${startItem}</span> to <span class="font-medium">${endItem}</span> of <span class="font-medium">${filteredData.length}</span> results`;
+      showingText.textContent = `Showing ${startItem} to ${endItem} of ${filteredData.length} entries`;
+      
+      // Disable prev/next buttons when appropriate
+      prevPageBtn.classList.toggle('opacity-50 cursor-not-allowed', currentPage === 1);
+      nextPageBtn.classList.toggle('opacity-50 cursor-not-allowed', currentPage === totalPages);
     }
-  });
 
-  document.getElementById('loginForm').addEventListener('submit', function (e) {
-    e.preventDefault();
-    const username = document.getElementById('username').value.trim().toLowerCase();
-    const password = document.getElementById('password').value.trim();
-    const errorMessage = document.getElementById('error-message');
-
-    if (username === 'purity' && password === 'Purity@12345') {
-      localStorage.setItem('user', 'purity');
-      localStorage.setItem('role', 'agent');
-      window.location.href = 'vee.html';
-    } else if (username === 'admin' && password === 'Admin@12345') {
-      localStorage.setItem('user', 'admin');
-      localStorage.setItem('role', 'admin');
-      window.location.href = 'admin.html';
-    } else if (username === 'eugene' && password === 'waterbottle') {
-      localStorage.setItem('user', 'eugene');
-      localStorage.setItem('role', 'agent');
-      window.location.href = 'vee.html';
-    } else {
-      errorMessage.textContent = 'Invalid username or password.';
-      errorMessage.classList.remove('hidden');
-      errorMessage.style.animation = 'shake 0.5s';
-      setTimeout(() => errorMessage.style.animation = '', 500);
+    function goToPage(page) {
+      if (page < 1 || page > Math.ceil(filteredData.length / itemsPerPage)) return;
+      
+      currentPage = page;
+      renderTable();
+      initPagination();
+      
+      // Scroll to top of table
+      document.querySelector('table').scrollIntoView({ behavior: 'smooth' });
     }
-  });
 
-  const togglePassword = document.getElementById('togglePassword');
-  const passwordInput = document.getElementById('password');
-  togglePassword.addEventListener('click', function() {
-    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-    passwordInput.setAttribute('type', type);
-    this.querySelector('i').classList.toggle('fa-eye');
-    this.querySelector('i').classList.toggle('fa-eye-slash');
-  });
+    function renderTable() {
+      const table = document.getElementById("adminTableBody");
+      table.innerHTML = "";
 
-  const style = document.createElement('style');
-  style.textContent = `
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-      20%, 40%, 60%, 80% { transform: translateX(5px); }
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const paginatedData = filteredData.slice(startIndex, endIndex);
+
+      paginatedData.forEach(entry => {
+        const row = `
+          <tr class="hover:bg-gray-50">
+            <td class="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900">${entry.name || ''}</td>
+            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">${entry.phone || ''}</td>
+            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">${entry.model || ''}</td>
+            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">${entry.imei || ''}</td>
+            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">${entry.qty || ''}</td>
+            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">Ksh${parseFloat(entry.price || 0).toLocaleString()}</td>
+            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">Ksh${parseFloat(entry.amount || 0).toLocaleString()}</td>
+            <td class="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900">Ksh${parseFloat(entry.total || 0).toLocaleString()}</td>
+            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">${entry.date || ''}</td>
+            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">${entry.time || ''}</td>
+            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
+              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">${entry.user || ''}</span>
+            </td>
+          </tr>
+        `;
+        table.insertAdjacentHTML("beforeend", row);
+      });
     }
-  `;
-  document.head.appendChild(style);
-</script>
 
+    // Search functionality
+    searchInput.addEventListener('input', function(e) {
+      const searchTerm = e.target.value.toLowerCase();
+      filteredData = allData.filter(entry => {
+        const entryValues = [
+          entry.name || '',
+          entry.phone || '',
+          entry.model || '',
+          entry.imei || '',
+          entry.qty || '',
+          entry.price || '',
+          entry.amount || '',
+          entry.total || '',
+          entry.date || '',
+          entry.time || '',
+          entry.user || ''
+        ].map(v => v.toString().toLowerCase());
+        
+        return entryValues.some(v => v.includes(searchTerm));
+      });
+      
+      currentPage = 1; // Reset to first page when searching
+      renderTable();
+      initPagination();
+    });
+
+    // Items per page change
+    perPageSelect.addEventListener('change', function(e) {
+      itemsPerPage = parseInt(e.target.value);
+      currentPage = 1; // Reset to first page when changing items per page
+      renderTable();
+      initPagination();
+    });
+
+    // Previous/Next page buttons
+    prevPageBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      if (currentPage > 1) {
+        goToPage(currentPage - 1);
+      }
+    });
+
+    nextPageBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      if (currentPage < Math.ceil(filteredData.length / itemsPerPage)) {
+        goToPage(currentPage + 1);
+      }
+    });
+
+    async function loadAdminData() {
+      try {
+        const res = await fetch("https://sheetdb.io/api/v1/whim74m5dy6u6");
+        allData = await res.json();
+        filteredData = [...allData]; // Initialize filteredData with all data
+        renderTable();
+        initPagination();
+      } catch (err) {
+        console.error("❌ Failed to load data:", err);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", loadAdminData);
+  </script>
 </body>
 </html>
