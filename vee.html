@@ -5,9 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>VEE PLUS INTERNATIONAL LIMITED - Official Receipt</title>
   
-  
+  <script>
+    const token = localStorage.getItem('token');
+    const issuedAt = parseInt(localStorage.getItem('tokenIssuedAt'), 10);
+    const now = Date.now();
+    const expired = !token || !issuedAt || (now - issuedAt > 15 * 60 * 1000);
+
+    if (expired) {
+      localStorage.clear();
+      alert("Session expired. Please log in again.");
+      window.location.href = "index.html";
+    }
+  </script>
 
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Barcode Scanner Library -->
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
@@ -39,6 +52,15 @@
       border: 2px solid #f3f3f3; border-top: 2px solid #3498db;
       border-radius: 50%; width: 16px; height: 16px;
       animation: spin 1s linear infinite;
+    }
+    #qr-reader-container {
+        width: 100%;
+        max-width: 500px;
+        margin: auto;
+    }
+    #qr-reader-container #qr-reader {
+        border: 2px solid #3b82f6 !important;
+        border-radius: 8px;
     }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     @media print { .no-print { display: none !important; } body { background-color: white; } .receipt-container { box-shadow: none; border-radius: 0; } }
@@ -117,7 +139,6 @@
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">User</label>
             <input id="user" type="text" value="eugene" readonly class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
-
           </div>
 
           <div class="pt-4">
@@ -143,7 +164,6 @@
             <button id="downloadBtn" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md font-medium transition flex items-center justify-center no-print">
               <i class="fas fa-download mr-2"></i> Download Image
             </button>
-            <!-- NEW SALE BUTTON -->
             <button id="newSaleBtn" class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded-md font-medium transition flex items-center justify-center no-print">
               <i class="fas fa-sync-alt mr-2"></i> New Sale
             </button>
@@ -201,10 +221,10 @@
             <div class="mt-8">
               <div class="hidden md:grid grid-cols-12 gap-2 mb-2 font-medium text-gray-700 border-b pb-2">
                 <div class="col-span-4">Phone Model</div>
-                <div class="col-span-2">IMEI</div>
+                <div class="col-span-3">IMEI</div>
                 <div class="col-span-1 text-right">Qty</div>
                 <div class="col-span-2 text-right">Price</div>
-                <div class="col-span-3 text-right">Amount</div>
+                <div class="col-span-2 text-right">Amount</div>
               </div>
               <div id="previewItems"></div>
               <div class="mt-6" id="totalsContainer"></div>
@@ -224,12 +244,24 @@
         <div class="mt-4 text-center text-gray-500 text-sm no-print">
           <p>Preview will update automatically as you fill the form</p>
           <p style="font-family: 'Comic Sans MS'; background-color: #f0f0f0; display: inline-block; padding: 4px 10px; border-radius: 8px;">
-  VEE PLUS <span style="color: #007bff;">v2.1.62</span>
-</p>
-
-
+            VEE PLUS <span style="color: #007bff;">v2.1.62</span>
+          </p>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- NEW: Barcode Scanner Modal -->
+  <div id="scannerModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-50 hidden">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-lg p-6">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-gray-800">Scan IMEI Barcode</h3>
+            <button id="closeScannerBtn" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+        </div>
+        <div id="qr-reader-container">
+            <div id="qr-reader" class="w-full"></div>
+        </div>
+        <p id="scannerStatus" class="text-center text-sm text-gray-600 mt-4"></p>
     </div>
   </div>
 
@@ -237,116 +269,58 @@
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       
-      // --- GEMINI AI OCR FUNCTIONALITY START ---
-      const photoInput = document.getElementById('photoInput');
-      const ocrStatus = document.getElementById('ocrStatus');
-      const idCaptureInput = document.getElementById('idCaptureInput');
-      const idOcrStatus = document.getElementById('idOcrStatus');
+      // --- BARCODE SCANNER FUNCTIONALITY START ---
+      const scannerModal = document.getElementById('scannerModal');
+      const closeScannerBtn = document.getElementById('closeScannerBtn');
+      const scannerStatus = document.getElementById('scannerStatus');
+      let html5QrCode;
+      let activeImeiInput = null;
 
-      const toBase64 = file => new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.readAsDataURL(file);
-          reader.onload = () => resolve(reader.result.split(',')[1]);
-          reader.onerror = error => reject(error);
-      });
-
-      photoInput.addEventListener('change', async (event) => {
-        const file = event.target.files[0];
-        if (!file) return;
-        ocrStatus.innerHTML = '<div class="loader mr-2"></div> Calling AI for sales data...';
-        try {
-          const base64ImageData = await toBase64(file);
-          const prompt = "Analyze this image of a sales record. Extract the 'Client name', 'Phone#', 'Price', 'Model', and 'IMEI#'. Provide the response as a clean JSON object with the keys: 'clientName', 'phone', 'price', 'model', 'imei'.";
-          const payload = {
-              contents: [{ parts: [ { text: prompt }, { inline_data: { mime_type: file.type, data: base64ImageData } } ] }],
-              generation_config: {
-                  response_mime_type: "application/json",
-                  response_schema: {
-                      type: "OBJECT",
-                      properties: {
-                          "clientName": { "type": "STRING" }, "phone": { "type": "STRING" },
-                          "price": { "type": "STRING" }, "model": { "type": "STRING" }, "imei": { "type": "STRING" }
-                      }
-                  }
-              }
-          };
-          const result = await callGeminiApi(payload);
-          populateSalesForm(result);
-          ocrStatus.textContent = '✅ AI captured sales data!';
-        } catch (error) {
-          console.error("Sales AI OCR Error:", error);
-          ocrStatus.textContent = `❌ Error: ${error.message}`;
-        } finally {
-            setTimeout(() => { ocrStatus.innerHTML = ''; }, 5000);
-            event.target.value = ''; 
-        }
-      });
-
-      idCaptureInput.addEventListener('change', async (event) => {
-        const file = event.target.files[0];
-        if (!file) return;
-        idOcrStatus.innerHTML = '<div class="loader mr-2"></div> Calling AI for ID Number...';
-        try {
-          const base64ImageData = await toBase64(file);
-          const prompt = "Analyze this image of a Kenyan National ID card. Extract only the ID Number. The ID Number is the large number below the 'ID NUMBER' label. Provide the response as a clean JSON object with a single key: 'idNumber'.";
-          const payload = {
-              contents: [{ parts: [ { text: prompt }, { inline_data: { mime_type: file.type, data: base64ImageData } } ] }],
-              generation_config: {
-                  response_mime_type: "application/json",
-                  response_schema: {
-                      type: "OBJECT",
-                      properties: { "idNumber": { "type": "STRING" } }
-                  }
-              }
-          };
-          const result = await callGeminiApi(payload);
-          if (result.idNumber) {
-            document.getElementById('customerId').value = result.idNumber.replace(/\s/g, '');
+      function onScanSuccess(decodedText, decodedResult) {
+        if (activeImeiInput) {
+            activeImeiInput.value = decodedText;
             updateReceiptPreview();
-          }
-          idOcrStatus.textContent = '✅ AI captured ID Number!';
-        } catch (error) {
-          console.error("ID AI OCR Error:", error);
-          idOcrStatus.textContent = `❌ Error: ${error.message}`;
-        } finally {
-            setTimeout(() => { idOcrStatus.innerHTML = ''; }, 5000);
-            event.target.value = ''; 
         }
-      });
+        stopScanner();
+      }
 
-      async function callGeminiApi(payload) {
-        const PROXY_URL = "https://gemini-proxy-server-7qvm.onrender.com/gemini-proxy"; 
-        const response = await fetch(PROXY_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+      function onScanFailure(error) {
+        // This callback is called frequently, so we keep it quiet unless debugging
+      }
+      
+      function startScanner(imeiInput) {
+        activeImeiInput = imeiInput;
+        scannerModal.classList.remove('hidden');
+        
+        if (!html5QrCode) {
+            html5QrCode = new Html5Qrcode("qr-reader");
+        }
+        
+        scannerStatus.textContent = "Requesting camera permissions...";
+        html5QrCode.start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: { width: 250, height: 150 } },
+            onScanSuccess,
+            onScanFailure
+        ).then(() => {
+            scannerStatus.textContent = "Point camera at the barcode";
+        }).catch(err => {
+            scannerStatus.textContent = "Error: Could not start camera.";
+            console.error("Could not start scanner", err);
         });
-        if (!response.ok) {
-            const errorResult = await response.json();
-            throw new Error(errorResult.error || `Proxy server error: ${response.statusText}`);
-        }
-        return await response.json();
       }
 
-      function populateSalesForm(data) {
-        if (data.clientName) document.getElementById('customerName').value = data.clientName;
-        if (data.phone) document.getElementById('customerPhone').value = data.phone.replace(/\s/g, '');
-        let firstItemRow = document.querySelector('.item-row');
-        if (!firstItemRow) {
-            document.getElementById('addItemBtn').click();
-            firstItemRow = document.querySelector('.item-row');
+      function stopScanner() {
+        if (html5QrCode && html5QrCode.isScanning) {
+            html5QrCode.stop().catch(err => console.error("Failed to stop scanner", err));
         }
-        if (firstItemRow) {
-          if (data.model) firstItemRow.querySelector('.item-desc').value = data.model.replace(/\s+/g, ' ');
-          if (data.price) firstItemRow.querySelector('.item-price').value = data.price.replace(/KES|,/g, '').trim();
-          if (data.imei) firstItemRow.querySelector('.item-imei').value = data.imei;
-        }
-        updateReceiptPreview();
+        scannerModal.classList.add('hidden');
       }
-      // --- GEMINI AI OCR FUNCTIONALITY END ---
 
+      closeScannerBtn.addEventListener('click', stopScanner);
+      // --- BARCODE SCANNER FUNCTIONALITY END ---
 
-      // --- Your existing, working code ---
+      // --- Your existing code ---
       const receiptInput = document.getElementById('receiptNumber');
       receiptInput.readOnly = true;
       receiptInput.classList.add('bg-gray-100', 'cursor-not-allowed');
@@ -385,11 +359,16 @@
           const itemId = Date.now();
           const itemHtml = `
               <div class="item-row bg-gray-50 p-3 rounded-md" data-id="${itemId}">
-                  <div class="grid grid-cols-1 md:grid-cols-12 gap-2">
+                  <div class="grid grid-cols-1 md:grid-cols-12 gap-2 items-center">
                       <div class="md:col-span-4"><input type="text" placeholder="Phone Model" class="item-desc w-full px-3 py-1 border border-gray-300 rounded text-sm"></div>
-                      <div class="md:col-span-2"><input type="text" placeholder="IMEI" class="item-imei w-full px-3 py-1 border border-gray-300 rounded text-sm"></div>
+                      <div class="md:col-span-3 flex items-center">
+                          <input type="text" placeholder="IMEI" class="item-imei w-full px-3 py-1 border border-gray-300 rounded-l text-sm">
+                          <button class="scan-btn bg-gray-200 hover:bg-gray-300 p-2 rounded-r" title="Scan Barcode">
+                              <i class="fas fa-barcode"></i>
+                          </button>
+                      </div>
                       <div class="md:col-span-1"><input type="number" placeholder="Qty" class="item-qty w-full px-3 py-1 border border-gray-300 rounded text-sm" value="1" min="1"></div>
-                      <div class="md:col-span-3"><input type="number" placeholder="Price" class="item-price w-full px-3 py-1 border border-gray-300 rounded text-sm" min="0" step="0.01"></div>
+                      <div class="md:col-span-2"><input type="number" placeholder="Price" class="item-price w-full px-3 py-1 border border-gray-300 rounded text-sm" min="0" step="0.01"></div>
                       <div class="md:col-span-2 flex items-center justify-end">
                           <button class="remove-item text-red-500 hover:text-red-700"><i class="fas fa-times"></i></button>
                       </div>
@@ -399,8 +378,14 @@
       });
       
       document.getElementById('itemsContainer').addEventListener('click', function (e) {
-        if (e.target.classList.contains('remove-item') || e.target.closest('.remove-item')) {
-          const itemRow = e.target.closest('.item-row');
+        const scanBtn = e.target.closest('.scan-btn');
+        const removeBtn = e.target.closest('.remove-item');
+
+        if (scanBtn) {
+            const imeiInput = scanBtn.previousElementSibling;
+            startScanner(imeiInput);
+        } else if (removeBtn) {
+          const itemRow = removeBtn.closest('.item-row');
           if (itemRow) itemRow.remove(), updateReceiptPreview();
         }
       });
@@ -432,12 +417,9 @@
         });
       });
 
-      // *** NEW SALE BUTTON LOGIC ***
-document.getElementById('newSaleBtn').addEventListener('click', function() {
-  // Redirect to vee.html instead of reloading
-  window.location.href = 'vee.html';
-});
-
+      document.getElementById('newSaleBtn').addEventListener('click', function() {
+        window.location.href = 'vee.html';
+      });
       
       document.getElementById('generateBtn').addEventListener('click', function () {
         updateReceiptPreview();
@@ -526,12 +508,12 @@ document.getElementById('newSaleBtn').addEventListener('click', function() {
           const itemHtml = `
             <div class="grid grid-cols-1 md:grid-cols-12 gap-2 py-3 receipt-line">
               <div class="md:col-span-4 font-medium md:font-normal">${desc}</div>
-              <div class="md:col-span-2 text-sm text-gray-600 md:text-base md:text-gray-800">
+              <div class="md:col-span-3 text-sm text-gray-600 md:text-base md:text-gray-800">
                 <span class="md:hidden">IMEI: </span>${imei}
               </div>
               <div class="md:col-span-1 text-right"><span class="md:hidden">Qty: </span>${qty}</div>
               <div class="md:col-span-2 text-right"><span class="md:hidden">Price: </span>Ksh${price.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</div>
-              <div class="md:col-span-3 text-right font-medium"><span class="md:hidden">Amount: </span>Ksh${amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</div>
+              <div class="md:col-span-2 text-right font-medium"><span class="md:hidden">Amount: </span>Ksh${amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</div>
             </div>`;
           itemsContainer.insertAdjacentHTML('beforeend', itemHtml);
         });
@@ -540,10 +522,10 @@ document.getElementById('newSaleBtn').addEventListener('click', function() {
           itemsContainer.innerHTML = `
             <div class="grid grid-cols-12 gap-2 py-3 receipt-line">
               <div class="col-span-4">Service Fee</div>
-              <div class="col-span-2"></div>
+              <div class="col-span-3"></div>
               <div class="col-span-1 text-right">1</div>
               <div class="col-span-2 text-right">Ksh0.00</div>
-              <div class="col-span-3 text-right">Ksh0.00</div>
+              <div class="col-span-2 text-right">Ksh0.00</div>
             </div>`;
         }
 
