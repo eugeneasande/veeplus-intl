@@ -193,7 +193,7 @@
                 <p class="text-gray-500 text-sm">Date:</p>
                 <p id="previewDate" class="font-medium">July 3, 2025</p>
                 <p class="text-gray-500 text-sm">Time:</p>
-                <p id="previewTime" class="font-medium">12:00:00 PM</p>
+                <p id="previewTime" class="font-medium">11:00:00 PM</p>
               </div>
             </div>
 
@@ -522,10 +522,15 @@
       document.getElementById('downloadBtn').addEventListener('click', function () {
         const receipt = document.getElementById('receiptPreview');
         let customerName = document.getElementById('customerName').value.trim() || 'receipt';
-        customerName = customerName.replace(/[^a-z0-9]/gi, '_');
+        // Sanitize the customer name to be filesystem-friendly
+        customerName = customerName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+        
         let imei = '';
-        const firstItem = document.querySelector('.item-imei');
-        if (firstItem && firstItem.value) imei = '_' + firstItem.value.replace(/[^a-z0-9]/gi, '');
+        const firstImeiInput = document.querySelector('.item-imei');
+        if (firstImeiInput && firstImeiInput.value) {
+          // Sanitize the IMEI to be filesystem-friendly
+          imei = '_' + firstImeiInput.value.trim().replace(/[^a-z0-9]/gi, '');
+        }
 
         html2canvas(receipt, {
           scale: 2,
@@ -533,6 +538,7 @@
           useCORS: true
         }).then(canvas => {
           const link = document.createElement('a');
+          // Use the sanitized and combined name and IMEI for the filename
           link.download = `${customerName}${imei}_receipt.png`;
           link.href = canvas.toDataURL('image/png');
           link.click();
