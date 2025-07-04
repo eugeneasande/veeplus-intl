@@ -1,684 +1,690 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>VEE PLUS INTERNATIONAL LIMITED - Official Receipt</title>
-  
-  
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Barcode Scanner Library -->
-  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>VEE PLUS INTERNATIONAL LIMITED - Official Receipt</title>
+    
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Barcode Scanner Library -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;600&display=swap');
 
-    body {
-      font-family: 'Poppins', sans-serif;
-      background-color: #f8fafc;
-    }
-    .receipt-container {
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-      border-radius: 12px;
-      overflow: hidden;
-    }
-    .receipt-header {
-      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-    }
-    .receipt-line {
-      border-bottom: 1px dashed #e2e8f0;
-    }
-    .receipt-total {
-      background-color: #f1f5f9;
-    }
-    .watermark {
-      position: absolute; opacity: 0.1; font-size: 120px;
-      font-weight: bold; color: #3b82f6;
-      transform: rotate(-30deg); z-index: 0; pointer-events: none;
-      top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg);
-    }
-    .loader {
-      border: 2px solid #f3f3f3; border-top: 2px solid #3498db;
-      border-radius: 50%; width: 16px; height: 16px;
-      animation: spin 1s linear infinite;
-    }
-    #qr-reader-container {
-        width: 100%;
-        max-width: 500px;
-        margin: auto;
-    }
-    #qr-reader-container #qr-reader {
-        border: 2px solid #3b82f6 !important;
-        border-radius: 8px;
-    }
-    /* Custom Notification Modal Styles */
-    #notificationModal {
-        transition: opacity 0.3s ease, transform 0.3s ease;
-    }
-    .notification-success { background-color: #22c55e; }
-    .notification-error { background-color: #ef4444; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8fafc;
+        }
+        
+        /* Styles for the compact receipt preview */
+        #receiptPreview {
+            font-family: 'Inconsolata', monospace; /* Use a monospaced font for a classic receipt feel */
+        }
 
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    @media print { .no-print { display: none !important; } body { background-color: white; } .receipt-container { box-shadow: none; border-radius: 0; } }
-    @media (max-width: 768px) { .watermark { font-size: 60px; } }
-  </style>
+        .receipt-container {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 8px; /* Slightly smaller radius */
+            overflow: hidden;
+        }
+        .receipt-header {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        }
+        .receipt-line {
+            border-bottom: 1px dashed #9ca3af; /* Dashed line for items */
+        }
+        .receipt-total {
+            border-top: 2px solid #1f2937;
+            border-bottom: 2px solid #1f2937;
+        }
+        .watermark {
+            position: absolute; 
+            opacity: 0.08; 
+            font-size: 6rem; /* Smaller watermark */
+            font-weight: bold; 
+            color: #3b82f6;
+            transform: rotate(-30deg); 
+            z-index: 0; 
+            pointer-events: none;
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%) rotate(-30deg);
+        }
+        .loader {
+            border: 2px solid #f3f3f3; border-top: 2px solid #3498db;
+            border-radius: 50%; width: 16px; height: 16px;
+            animation: spin 1s linear infinite;
+        }
+        #qr-reader-container {
+            width: 100%;
+            max-width: 500px;
+            margin: auto;
+        }
+        #qr-reader-container #qr-reader {
+            border: 2px solid #3b82f6 !important;
+            border-radius: 8px;
+        }
+        /* Custom Notification Modal Styles */
+        #notificationModal {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .notification-success { background-color: #22c55e; }
+        .notification-error { background-color: #ef4444; }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* Print styles optimized for the compact receipt */
+        @media print {
+            .no-print { display: none !important; }
+            body { background-color: white; margin: 0; padding: 0; }
+            .receipt-container-wrapper {
+                margin: 0;
+                padding: 0;
+            }
+            .receipt-container { 
+                box-shadow: none; 
+                border-radius: 0;
+                width: 100% !important;
+                max-width: 100% !important;
+                border: 1px solid #ccc;
+            }
+        }
+    </style>
 </head>
 <body class="min-h-screen bg-gray-50">
-  <div class="container mx-auto px-4 py-8 overflow-x-auto">
-    <div class="text-center mb-8">
-      <h1 class="text-3xl md:text-4xl font-bold text-blue-600 mb-2">VEE PLUS INTERNATIONAL</h1>
-      <p class="text-gray-600">VEE PLUS INTERNATIONAL Electronic  Receipt Generator</p>
-    </div>
-
-    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-6">
-      <!-- Receipt Form -->
-      <div class="bg-white rounded-lg shadow-md p-6 lg:col-span-2 no-print">
-        <h2 class="text-xl font-semibold text-gray-800 mb-4">Receipt Details</h2>
-
-        <div class="space-y-4">
-          
-          <!-- AI CAPTURE SECTION -->
-          <div class="mb-4 p-3 border border-dashed border-gray-300 rounded-lg">
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              <i class="fas fa-camera-retro mr-2"></i>Capture Sales Data from Photo
-            </label>
-            <input id="photoInput" type="file" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer" />
-            <div id="ocrStatus" class="text-xs text-gray-500 mt-2 h-4 flex items-center"></div>
-          </div>
-          <!-- END AI CAPTURE SECTION -->
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Customer Name</label>
-            <input id="customerName" type="text" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-            <input id="customerPhone" type="tel" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
-          </div>
-
-          <!-- ID NUMBER FIELD WITH CAPTURE BUTTON -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">ID Number</label>
-            <div class="flex items-center gap-2">
-              <input id="customerId" type="text" class="flex-grow w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
-              <label for="idCaptureInput" class="flex-shrink-0 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-3 rounded-md cursor-pointer transition">
-                <i class="fas fa-id-card"></i>
-              </label>
-              <input id="idCaptureInput" type="file" accept="image/*" class="hidden" />
-            </div>
-            <div id="idOcrStatus" class="text-xs text-gray-500 mt-1 h-4 flex items-center"></div>
-          </div>
-          <!-- END ID NUMBER FIELD -->
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Receipt No.</label>
-            <input id="receiptNumber" type="text" value="1" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
-            <input id="receiptDate" type="date" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
-            <select id="paymentMethod" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-            <option>Mobile Money</option> 
-              <option>Cash</option>
-              <option>Bank Transfer</option>
-              <option>Credit Card</option>
-              <option>Cheque</option>
-            </select>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">User</label>
-            <input id="user" type="text" value="eugene" readonly class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
-          </div>
-
-          <div class="pt-4">
-            <h3 class="font-medium text-gray-700 mb-2">Items</h3>
-            <div id="itemsContainer" class="space-y-3"></div>
-            <button id="addItemBtn" class="mt-3 w-full flex items-center justify-center py-2 px-4 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition">
-              <i class="fas fa-plus mr-2"></i> Add Item
-            </button>
-          </div>
-
-          <div class="pt-4">
-            <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-            <textarea id="notes" rows="2" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
-          </div>
-
-          <div class="flex flex-wrap gap-3 pt-4">
-            <button id="generateBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md font-medium transition flex items-center justify-center">
-              <i class="fas fa-receipt mr-2"></i> Generate
-            </button>
-            <button id="printBtn" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-md font-medium transition flex items-center justify-center no-print">
-              <i class="fas fa-print mr-2"></i> Print
-            </button>
-            <button id="downloadBtn" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md font-medium transition flex items-center justify-center no-print">
-              <i class="fas fa-download mr-2"></i> Download Image
-            </button>
-            <button id="newSaleBtn" class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded-md font-medium transition flex items-center justify-center no-print">
-              <i class="fas fa-sync-alt mr-2"></i> New Sale
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Receipt Preview -->
-      <div class="lg:col-span-3">
-        <div id="receiptPreview" class="receipt-container bg-white relative overflow-visible">
-
-          <div class="watermark">VEE-PLUS</div>
-
-          <div class="receipt-header text-white p-6 text-center">
-            <h2 class="text-2xl font-bold">VEE PLUS INTERNATIONAL LIMITED</h2>
-            <p class="text-blue-100 mt-1"></p>
-            <div class="mt-4 text-blue-100 text-sm">
-              <p>P.O. BOX 4550-40200, KISII</p>
-              <p>CELL: +254 710885228</p>
-              <P>PIN: P052269840L</P>
-            </div>
-          </div>
-
-          <div class="p-6">
-            <div class="flex justify-between mb-6">
-              <div>
-                <p class="text-gray-500 text-sm">Receipt No:</p>
-                <p id="previewReceiptNo" class="font-medium">1</p>
-              </div>
-              <div class="text-right">
-                <p class="text-gray-500 text-sm">Date:</p>
-                <p id="previewDate" class="font-medium">July 3, 2025</p>
-                <p class="text-gray-500 text-sm">Time:</p>
-                <p id="previewTime" class="font-medium">11:00:00 PM</p>
-              </div>
-            </div>
-
-            <div class="mb-6">
-              <p class="text-gray-500 text-sm">Customer:</p>
-              <p id="previewCustomer" class="font-medium text-lg">John Doe</p>
-              <p id="previewPhone" class="text-gray-600">+254 700 000 000</p>
-              <p id="previewId" class="text-gray-600">ID: <span></span></p>
-            </div>
-
-            <div class="mb-2">
-              <p class="text-gray-500 text-sm">Payment Method:</p>
-              <p id="previewPaymentMethod" class="font-medium">Cash</p>
-            </div>
-
-            <div class="mb-2">
-              <p class="text-gray-500 text-sm">Served By:</p>
-              <p id="previewUser" class="font-medium">eugene</p>
-            </div>
-
-            <div class="mt-8">
-              <div class="hidden md:grid grid-cols-12 gap-2 mb-2 font-medium text-gray-700 border-b pb-2">
-                <div class="col-span-4">Phone Model</div>
-                <div class="col-span-3">IMEI</div>
-                <div class="col-span-1 text-right">Qty</div>
-                <div class="col-span-2 text-right">Price</div>
-                <div class="col-span-2 text-right">Amount</div>
-              </div>
-              <div id="previewItems"></div>
-              <div class="mt-6" id="totalsContainer"></div>
-            </div>
-
-            <div class="mt-8 pt-4 border-t">
-              <p class="text-gray-500 text-sm mb-1">Notes:</p>
-              <p id="previewNotes" class="text-gray-700"></p>
-            </div>
-
-            <div class="mt-8 pt-4 border-t text-center text-sm text-gray-500">
-              <p>Goods Once Sold Cannot Be Re-Accepted!</p>
-            </div>
-          </div>
+    <div class="container mx-auto px-4 py-8 overflow-x-auto">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-blue-600 mb-2">VEE PLUS INTERNATIONAL</h1>
+            <p class="text-gray-600">Electronic Receipt Generator</p>
         </div>
 
-        <div class="mt-4 text-center text-gray-500 text-sm no-print">
-          <p>Preview will update automatically as you fill the form</p>
-          <p style="font-family: 'Comic Sans MS'; background-color: #f0f0f0; display: inline-block; padding: 4px 10px; border-radius: 8px;">
-  VEE PLUS <span style="color: #007bff;">v3.0.0 (stable)</span>
-</p>
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-8">
+            <!-- Receipt Form -->
+            <div class="bg-white rounded-lg shadow-md p-6 lg:col-span-2 no-print self-start">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Receipt Details</h2>
 
-        </div>
-      </div>
-    </div>
-  </div>
+                <div class="space-y-4">
+                    
+                    <!-- AI CAPTURE SECTION -->
+                    <div class="mb-4 p-3 border border-dashed border-gray-300 rounded-lg">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-camera-retro mr-2"></i>Capture Sales Data from Photo
+                        </label>
+                        <input id="photoInput" type="file" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer" />
+                        <div id="ocrStatus" class="text-xs text-gray-500 mt-2 h-4 flex items-center"></div>
+                    </div>
+                    <!-- END AI CAPTURE SECTION -->
 
-  <!-- Barcode Scanner Modal -->
-  <div id="scannerModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-50 hidden">
-    <div class="bg-white rounded-lg shadow-xl w-full max-w-lg p-6">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-bold text-gray-800">Scan IMEI Barcode</h3>
-            <button id="closeScannerBtn" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
-        </div>
-        <div id="qr-reader-container">
-            <div id="qr-reader" class="w-full"></div>
-        </div>
-        <p id="scannerStatus" class="text-center text-sm text-gray-600 mt-4"></p>
-    </div>
-  </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Customer Name</label>
+                        <input id="customerName" type="text" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                    </div>
 
-  <!-- Custom Notification Modal -->
-  <div id="notificationModal" class="fixed top-5 right-5 p-4 rounded-lg text-white font-semibold shadow-lg z-[100] opacity-0 -translate-y-10 pointer-events-none">
-    <span id="notificationMessage"></span>
-  </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                        <input id="customerPhone" type="tel" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                    </div>
 
+                    <!-- ID NUMBER FIELD WITH CAPTURE BUTTON -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">ID Number</label>
+                        <div class="flex items-center gap-2">
+                            <input id="customerId" type="text" class="flex-grow w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                            <label for="idCaptureInput" class="flex-shrink-0 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-3 rounded-md cursor-pointer transition">
+                                <i class="fas fa-id-card"></i>
+                            </label>
+                            <input id="idCaptureInput" type="file" accept="image/*" class="hidden" />
+                        </div>
+                        <div id="idOcrStatus" class="text-xs text-gray-500 mt-1 h-4 flex items-center"></div>
+                    </div>
+                    <!-- END ID NUMBER FIELD -->
 
-  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // --- URLs and Constants ---
-      const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbxaQzXdKKRxhFyQPMGGTR3fe5D5DVQ1x_1kVJcbROfI35W1o4RkwUZk-WCNz3Utyo7kbQ/exec';
-      const GEMINI_PROXY_URL = 'https://gemini-proxy-server-7qvm.onrender.com/gemini-proxy';
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Receipt No.</label>
+                        <input id="receiptNumber" type="text" value="1" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                    </div>
 
-      // --- Custom Notification Function ---
-      const notificationModal = document.getElementById('notificationModal');
-      const notificationMessage = document.getElementById('notificationMessage');
-      let notificationTimeout;
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                        <input id="receiptDate" type="date" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                    </div>
 
-      function showNotification(message, type = 'success') {
-          clearTimeout(notificationTimeout);
-          notificationMessage.textContent = message;
-          notificationModal.className = `fixed top-5 right-5 p-4 rounded-lg text-white font-semibold shadow-lg z-[100] opacity-100 translate-y-0 pointer-events-auto ${type === 'success' ? 'notification-success' : 'notification-error'}`;
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
+                        <select id="paymentMethod" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option>Mobile Money</option> 
+                            <option>Cash</option>
+                            <option>Bank Transfer</option>
+                            <option>Credit Card</option>
+                            <option>Cheque</option>
+                        </select>
+                    </div>
 
-          notificationTimeout = setTimeout(() => {
-              notificationModal.classList.replace('opacity-100', 'opacity-0');
-              notificationModal.classList.replace('translate-y-0', '-translate-y-10');
-              notificationModal.classList.add('pointer-events-none');
-          }, 3000);
-      }
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">User</label>
+                        <input id="user" type="text" value="eugene" readonly class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                    </div>
 
-      // --- AI DATA EXTRACTION FUNCTIONALITY ---
-      
-      /**
-       * Converts a file object to a Google Generative AI Part object.
-       * @param {File} file The file to convert.
-       * @returns {Promise<Object>} A promise that resolves to a generative part object.
-       */
-      async function fileToGenerativePart(file) {
-          const base64EncodedDataPromise = new Promise((resolve) => {
-              const reader = new FileReader();
-              reader.onloadend = () => resolve(reader.result.split(',')[1]);
-              reader.readAsDataURL(file);
-          });
-          return {
-              inlineData: { data: await base64EncodedDataPromise, mimeType: file.type },
-          };
-      }
-
-      /**
-       * Handles the image upload, sends it to the AI proxy, and populates the form.
-       * @param {File} file The image file.
-       * @param {string} prompt The prompt for the AI.
-       * @param {HTMLElement} statusElement The element to display processing status.
-       * @param {Function} populateFunction The function to call with the AI's response data.
-       */
-      async function handleImageUpload(file, prompt, statusElement, populateFunction) {
-          if (!file) return;
-
-          statusElement.innerHTML = '<div class="loader mr-2"></div> Processing...';
-          
-          try {
-              const imagePart = await fileToGenerativePart(file);
-              const payload = {
-                  contents: [{ parts: [{ text: prompt }, imagePart] }],
-              };
-
-              const response = await fetch(GEMINI_PROXY_URL, {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify(payload),
-              });
-
-              if (!response.ok) {
-                  const errorData = await response.json();
-                  throw new Error(errorData.error || 'AI processing failed.');
-              }
-
-              const data = await response.json();
-              populateFunction(data);
-              statusElement.textContent = '✅ Data extracted successfully!';
-              updateReceiptPreview();
-
-          } catch (error) {
-              console.error('AI Extraction Error:', error);
-              statusElement.textContent = `❌ Error: ${error.message}`;
-          }
-      }
-
-      // Event listener for the main sales data photo input
-      document.getElementById('photoInput').addEventListener('change', (e) => {
-          const file = e.target.files[0];
-          const prompt = `Analyze the attached image of a product box or sales agreement. Extract the following details: customerName (if present), customerPhone (if present), and a list of items. For each item, extract the model (product name/description), imei (the IMEI number), and price. Respond with a single, clean JSON object with the keys 'customerName', 'customerPhone', and 'items' (which should be an array of objects). Example: { "customerName": "John Doe", "customerPhone": "0712345678", "items": [{"model": "Samsung A52", "imei": "123456789012345", "price": 35000}] }`;
-          const statusElement = document.getElementById('ocrStatus');
-          
-          const populateSalesData = (data) => {
-              if (data.customerName) document.getElementById('customerName').value = data.customerName;
-              if (data.customerPhone) document.getElementById('customerPhone').value = data.customerPhone;
-              
-              if (data.items && Array.isArray(data.items) && data.items.length > 0) {
-                  const itemsContainer = document.getElementById('itemsContainer');
-                  itemsContainer.innerHTML = ''; // Clear existing items
-                  data.items.forEach(item => {
-                      addItemRow(item.model, item.imei, item.price);
-                  });
-              }
-          };
-          
-          handleImageUpload(file, prompt, statusElement, populateSalesData);
-      });
-
-      // Event listener for the ID card capture input
-      document.getElementById('idCaptureInput').addEventListener('change', (e) => {
-          const file = e.target.files[0];
-          const prompt = `From the image of the ID card, extract only the ID Number. Respond with a single, clean JSON object with the key 'idNumber'. Example: { "idNumber": "12345678" }`;
-          const statusElement = document.getElementById('idOcrStatus');
-          
-          const populateIdData = (data) => {
-              if (data.idNumber) document.getElementById('customerId').value = data.idNumber;
-          };
-
-          handleImageUpload(file, prompt, statusElement, populateIdData);
-      });
-
-
-      // --- BARCODE SCANNER FUNCTIONALITY ---
-      const scannerModal = document.getElementById('scannerModal');
-      const closeScannerBtn = document.getElementById('closeScannerBtn');
-      const scannerStatus = document.getElementById('scannerStatus');
-      let html5QrCode;
-      let activeImeiInput = null;
-
-      function onScanSuccess(decodedText, decodedResult) {
-        if (activeImeiInput) {
-            activeImeiInput.value = decodedText;
-            updateReceiptPreview();
-        }
-        stopScanner();
-      }
-
-      function onScanFailure(error) {
-        // This callback is called frequently, so we keep it quiet unless debugging
-      }
-      
-      function startScanner(imeiInput) {
-        activeImeiInput = imeiInput;
-        scannerModal.classList.remove('hidden');
-        
-        if (!html5QrCode) {
-            html5QrCode = new Html5Qrcode("qr-reader");
-        }
-        
-        scannerStatus.textContent = "Requesting camera permissions...";
-        html5QrCode.start(
-            { facingMode: "environment" },
-            { fps: 10, qrbox: { width: 250, height: 150 } },
-            onScanSuccess,
-            onScanFailure
-        ).then(() => {
-            scannerStatus.textContent = "Point camera at the barcode";
-        }).catch(err => {
-            scannerStatus.textContent = "Error: Could not start camera.";
-            console.error("Could not start scanner", err);
-        });
-      }
-
-      function stopScanner() {
-        if (html5QrCode && html5QrCode.isScanning) {
-            html5QrCode.stop().catch(err => console.error("Failed to stop scanner", err));
-        }
-        scannerModal.classList.add('hidden');
-      }
-
-      closeScannerBtn.addEventListener('click', stopScanner);
-      
-      // --- RECEIPT NUMBER LOGIC (UPDATED) ---
-      const receiptInput = document.getElementById('receiptNumber');
-      receiptInput.readOnly = true;
-      receiptInput.classList.add('bg-gray-100', 'cursor-not-allowed');
-      
-      async function fetchLastReceiptNumber() {
-        try {
-          const response = await fetch(GOOGLE_SHEET_URL);
-          const result = await response.json();
-          const last = result.last_receipt;
-          const currentYear = new Date().getFullYear();
-          const match = last.match(/VPL-(\d{4})-(\d+)/);
-          const nextNum = match ? parseInt(match[2]) + 1 : 1;
-          const next = `VPL-${currentYear}-${String(nextNum).padStart(3, '0')}`;
-          receiptInput.value = next;
-          updateReceiptPreview(); // Update preview with new number
-        } catch (error) {
-          console.error("❌ Failed to fetch receipt number:", error);
-          receiptInput.value = `VPL-${new Date().getFullYear()}-001`;
-          updateReceiptPreview();
-        }
-      }
-      
-      // --- INITIALIZATION ---
-      fetchLastReceiptNumber();
-      
-      const today = new Date();
-      document.getElementById('receiptDate').value = today.toISOString().split('T')[0];
-      
-      /**
-       * Adds a new item row to the form.
-       * @param {string} [desc=''] The item description/model.
-       * @param {string} [imei=''] The item IMEI.
-       * @param {number} [price=0] The item price.
-       */
-      function addItemRow(desc = '', imei = '', price = 0) {
-        const itemId = Date.now();
-        const itemHtml = `
-            <div class="item-row bg-gray-50 p-3 rounded-md" data-id="${itemId}">
-                <div class="grid grid-cols-1 md:grid-cols-12 gap-2 items-center">
-                    <div class="md:col-span-4"><input type="text" placeholder="Phone Model" class="item-desc w-full px-3 py-1 border border-gray-300 rounded text-sm" value="${desc}"></div>
-                    <div class="md:col-span-3 flex items-center">
-                        <input type="text" placeholder="IMEI" class="item-imei w-full px-3 py-1 border border-gray-300 rounded-l text-sm" value="${imei}">
-                        <button class="scan-btn bg-gray-200 hover:bg-gray-300 p-2 rounded-r" title="Scan Barcode">
-                            <i class="fas fa-barcode"></i>
+                    <div class="pt-4">
+                        <h3 class="font-medium text-gray-700 mb-2">Items</h3>
+                        <div id="itemsContainer" class="space-y-3"></div>
+                        <button id="addItemBtn" class="mt-3 w-full flex items-center justify-center py-2 px-4 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition">
+                            <i class="fas fa-plus mr-2"></i> Add Item
                         </button>
                     </div>
-                    <div class="md:col-span-1"><input type="number" placeholder="Qty" class="item-qty w-full px-3 py-1 border border-gray-300 rounded text-sm" value="1" min="1"></div>
-                    <div class="md:col-span-2"><input type="number" placeholder="Price" class="item-price w-full px-3 py-1 border border-gray-300 rounded text-sm" value="${price || ''}" min="0" step="0.01"></div>
-                    <div class="md:col-span-2 flex items-center justify-end">
-                        <button class="remove-item text-red-500 hover:text-red-700"><i class="fas fa-times"></i></button>
+
+                    <div class="pt-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                        <textarea id="notes" rows="2" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                    </div>
+
+                    <div class="flex flex-wrap gap-3 pt-4">
+                        <button id="generateBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md font-medium transition flex items-center justify-center">
+                            <i class="fas fa-receipt mr-2"></i> Generate
+                        </button>
+                        <button id="printBtn" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-md font-medium transition flex items-center justify-center no-print">
+                            <i class="fas fa-print mr-2"></i> Print
+                        </button>
+                        <button id="downloadBtn" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md font-medium transition flex items-center justify-center no-print">
+                            <i class="fas fa-download mr-2"></i> Download Image
+                        </button>
+                        <button id="newSaleBtn" class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded-md font-medium transition flex items-center justify-center no-print">
+                            <i class="fas fa-sync-alt mr-2"></i> New Sale
+                        </button>
                     </div>
                 </div>
-            </div>`;
-        document.getElementById('itemsContainer').insertAdjacentHTML('beforeend', itemHtml);
-        updateReceiptPreview();
-      }
+            </div>
 
-      // --- UI EVENT LISTENERS ---
-      document.getElementById('addItemBtn').addEventListener('click', () => addItemRow());
-      
-      document.getElementById('itemsContainer').addEventListener('click', function (e) {
-        const scanBtn = e.target.closest('.scan-btn');
-        const removeBtn = e.target.closest('.remove-item');
+            <!-- Receipt Preview -->
+            <div class="lg:col-span-3 receipt-container-wrapper flex justify-center items-start">
+                <div id="receiptPreview" class="receipt-container bg-white relative w-full max-w-sm text-gray-800">
 
-        if (scanBtn) {
-            const imeiInput = scanBtn.previousElementSibling;
-            startScanner(imeiInput);
-        } else if (removeBtn) {
-          const itemRow = removeBtn.closest('.item-row');
-          if (itemRow) {
-            itemRow.remove();
-            updateReceiptPreview();
-          }
+                    <div class="watermark">VEE PLUS</div>
+
+                    <div class="text-center p-4">
+                        <h2 class="text-xl font-bold">VEE PLUS INTL LTD</h2>
+                        <p class="text-xs">P.O. BOX 4550-40200, KISII</p>
+                        <p class="text-xs">CELL: +254 710885228</p>
+                        <p class="text-xs">PIN: P052269840L</p>
+                    </div>
+
+                    <div class="p-4 text-xs">
+                        <div class="flex justify-between mb-2">
+                            <span>Receipt No: <b id="previewReceiptNo">1</b></span>
+                            <span id="previewDate">July 4, 2025</span>
+                        </div>
+                        <div class="flex justify-between mb-4">
+                            <span>Served By: <b id="previewUser">eugene</b></span>
+                            <span id="previewTime">12:00:00 PM</span>
+                        </div>
+
+                        <div class="mb-4">
+                            <p>Customer: <b id="previewCustomer" class="text-sm">John Doe</b></p>
+                            <p>Phone: <span id="previewPhone">+254 700 000 000</span></p>
+                            <p>ID: <span id="previewId"></span></p>
+                            <p>Payment: <span id="previewPaymentMethod">Cash</span></p>
+                        </div>
+
+                        <!-- Items Header -->
+                        <div class="flex font-bold receipt-line pb-1 mb-1">
+                            <div class="flex-grow">ITEM</div>
+                            <div class="w-12 text-right">QTY</div>
+                            <div class="w-20 text-right">TOTAL</div>
+                        </div>
+                        
+                        <!-- Items List -->
+                        <div id="previewItems" class="text-xs"></div>
+                        
+                        <!-- Totals Section -->
+                        <div id="totalsContainer" class="mt-4 pt-2 font-bold"></div>
+
+                        <div class="mt-4 pt-2 border-t border-dashed border-gray-400">
+                            <p class="font-bold mb-1">Notes:</p>
+                            <p id="previewNotes" class="text-xs"></p>
+                        </div>
+
+                        <div class="mt-4 pt-2 border-t border-dashed border-gray-400 text-center text-xs">
+                            <p>Goods Once Sold Cannot Be Re-Accepted!</p>
+                            <p class="font-bold mt-2">Thank you for your business!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Barcode Scanner Modal -->
+    <div id="scannerModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-lg p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-gray-800">Scan IMEI Barcode</h3>
+                <button id="closeScannerBtn" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            </div>
+            <div id="qr-reader-container">
+                <div id="qr-reader" class="w-full"></div>
+            </div>
+            <p id="scannerStatus" class="text-center text-sm text-gray-600 mt-4"></p>
+        </div>
+    </div>
+
+    <!-- Custom Notification Modal -->
+    <div id="notificationModal" class="fixed top-5 right-5 p-4 rounded-lg text-white font-semibold shadow-lg z-[100] opacity-0 -translate-y-10 pointer-events-none">
+        <span id="notificationMessage"></span>
+    </div>
+
+
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- URLs and Constants ---
+        const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbxaQzXdKKRxhFyQPMGGTR3fe5D5DVQ1x_1kVJcbROfI35W1o4RkwUZk-WCNz3Utyo7kbQ/exec';
+        const GEMINI_PROXY_URL = 'https://gemini-proxy-server-7qvm.onrender.com/gemini-proxy';
+
+        // --- Custom Notification Function ---
+        const notificationModal = document.getElementById('notificationModal');
+        const notificationMessage = document.getElementById('notificationMessage');
+        let notificationTimeout;
+
+        function showNotification(message, type = 'success') {
+            clearTimeout(notificationTimeout);
+            notificationMessage.textContent = message;
+            notificationModal.className = `fixed top-5 right-5 p-4 rounded-lg text-white font-semibold shadow-lg z-[100] opacity-100 translate-y-0 pointer-events-auto ${type === 'success' ? 'notification-success' : 'notification-error'}`;
+
+            notificationTimeout = setTimeout(() => {
+                notificationModal.classList.replace('opacity-100', 'opacity-0');
+                notificationModal.classList.replace('translate-y-0', '-translate-y-10');
+                notificationModal.classList.add('pointer-events-none');
+            }, 3000);
         }
-      });
-      
-      const formInputs = ['customerName', 'customerPhone', 'customerId', 'receiptNumber', 'receiptDate', 'paymentMethod', 'user', 'notes'];
-      formInputs.forEach(id => document.getElementById(id).addEventListener('input', updateReceiptPreview));
-      
-      document.getElementById('itemsContainer').addEventListener('input', updateReceiptPreview);
-      
-      document.getElementById('printBtn').addEventListener('click', () => window.print());
-      
-      document.getElementById('downloadBtn').addEventListener('click', function () {
-        const receipt = document.getElementById('receiptPreview');
-        let customerName = document.getElementById('customerName').value.trim() || 'receipt';
-        // Sanitize the customer name to be filesystem-friendly
-        customerName = customerName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+
+        // --- AI DATA EXTRACTION FUNCTIONALITY ---
         
-        let imei = '';
-        const firstImeiInput = document.querySelector('.item-imei');
-        if (firstImeiInput && firstImeiInput.value) {
-          // Sanitize the IMEI to be filesystem-friendly
-          imei = '_' + firstImeiInput.value.trim().replace(/[^a-z0-9]/gi, '');
+        /**
+         * Converts a file object to a Google Generative AI Part object.
+         * @param {File} file The file to convert.
+         * @returns {Promise<Object>} A promise that resolves to a generative part object.
+         */
+        async function fileToGenerativePart(file) {
+            const base64EncodedDataPromise = new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result.split(',')[1]);
+                reader.readAsDataURL(file);
+            });
+            return {
+                inlineData: { data: await base64EncodedDataPromise, mimeType: file.type },
+            };
         }
 
-        html2canvas(receipt, {
-          scale: 2,
-          logging: false,
-          useCORS: true
-        }).then(canvas => {
-          const link = document.createElement('a');
-          // Use the sanitized and combined name and IMEI for the filename
-          link.download = `${customerName}${imei}_receipt.png`;
-          link.href = canvas.toDataURL('image/png');
-          link.click();
-        });
-      });
+        /**
+         * Handles the image upload, sends it to the AI proxy, and populates the form.
+         * @param {File} file The image file.
+         * @param {string} prompt The prompt for the AI.
+         * @param {HTMLElement} statusElement The element to display processing status.
+         * @param {Function} populateFunction The function to call with the AI's response data.
+         */
+        async function handleImageUpload(file, prompt, statusElement, populateFunction) {
+            if (!file) return;
 
-      document.getElementById('newSaleBtn').addEventListener('click', function() {
-        document.getElementById('customerName').value = '';
-        document.getElementById('customerPhone').value = '';
-        document.getElementById('customerId').value = '';
-        document.getElementById('notes').value = '';
-        document.getElementById('itemsContainer').innerHTML = '';
-        addItemRow(); // Add one fresh item row
-        fetchLastReceiptNumber(); // Get the next receipt number
+            statusElement.innerHTML = '<div class="loader mr-2"></div> Processing...';
+            
+            try {
+                const imagePart = await fileToGenerativePart(file);
+                const payload = {
+                    contents: [{ parts: [{ text: prompt }, imagePart] }],
+                };
+
+                const response = await fetch(GEMINI_PROXY_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'AI processing failed.');
+                }
+
+                const data = await response.json();
+                populateFunction(data);
+                statusElement.textContent = '✅ Data extracted successfully!';
+                updateReceiptPreview();
+
+            } catch (error) {
+                console.error('AI Extraction Error:', error);
+                statusElement.textContent = `❌ Error: ${error.message}`;
+            }
+        }
+
+        // Event listener for the main sales data photo input
+        document.getElementById('photoInput').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            const prompt = `Analyze the attached image of a product box or sales agreement. Extract the following details: customerName (if present), customerPhone (if present), and a list of items. For each item, extract the model (product name/description), imei (the IMEI number), and price. Respond with a single, clean JSON object with the keys 'customerName', 'customerPhone', and 'items' (which should be an array of objects). Example: { "customerName": "John Doe", "customerPhone": "0712345678", "items": [{"model": "Samsung A52", "imei": "123456789012345", "price": 35000}] }`;
+            const statusElement = document.getElementById('ocrStatus');
+            
+            const populateSalesData = (data) => {
+                if (data.customerName) document.getElementById('customerName').value = data.customerName;
+                if (data.customerPhone) document.getElementById('customerPhone').value = data.customerPhone;
+                
+                if (data.items && Array.isArray(data.items) && data.items.length > 0) {
+                    const itemsContainer = document.getElementById('itemsContainer');
+                    itemsContainer.innerHTML = ''; // Clear existing items
+                    data.items.forEach(item => {
+                        addItemRow(item.model, item.imei, item.price);
+                    });
+                }
+            };
+            
+            handleImageUpload(file, prompt, statusElement, populateSalesData);
+        });
+
+        // Event listener for the ID card capture input
+        document.getElementById('idCaptureInput').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            const prompt = `From the image of the ID card, extract only the ID Number. Respond with a single, clean JSON object with the key 'idNumber'. Example: { "idNumber": "12345678" }`;
+            const statusElement = document.getElementById('idOcrStatus');
+            
+            const populateIdData = (data) => {
+                if (data.idNumber) document.getElementById('customerId').value = data.idNumber;
+            };
+
+            handleImageUpload(file, prompt, statusElement, populateIdData);
+        });
+
+
+        // --- BARCODE SCANNER FUNCTIONALITY ---
+        const scannerModal = document.getElementById('scannerModal');
+        const closeScannerBtn = document.getElementById('closeScannerBtn');
+        const scannerStatus = document.getElementById('scannerStatus');
+        let html5QrCode;
+        let activeImeiInput = null;
+
+        function onScanSuccess(decodedText, decodedResult) {
+            if (activeImeiInput) {
+                activeImeiInput.value = decodedText;
+                updateReceiptPreview();
+            }
+            stopScanner();
+        }
+
+        function onScanFailure(error) {
+            // This callback is called frequently, so we keep it quiet unless debugging
+        }
+        
+        function startScanner(imeiInput) {
+            activeImeiInput = imeiInput;
+            scannerModal.classList.remove('hidden');
+            
+            if (!html5QrCode) {
+                html5QrCode = new Html5Qrcode("qr-reader");
+            }
+            
+            scannerStatus.textContent = "Requesting camera permissions...";
+            html5QrCode.start(
+                { facingMode: "environment" },
+                { fps: 10, qrbox: { width: 250, height: 150 } },
+                onScanSuccess,
+                onScanFailure
+            ).then(() => {
+                scannerStatus.textContent = "Point camera at the barcode";
+            }).catch(err => {
+                scannerStatus.textContent = "Error: Could not start camera.";
+                console.error("Could not start scanner", err);
+            });
+        }
+
+        function stopScanner() {
+            if (html5QrCode && html5QrCode.isScanning) {
+                html5QrCode.stop().catch(err => console.error("Failed to stop scanner", err));
+            }
+            scannerModal.classList.add('hidden');
+        }
+
+        closeScannerBtn.addEventListener('click', stopScanner);
+        
+        // --- RECEIPT NUMBER LOGIC (UPDATED) ---
+        const receiptInput = document.getElementById('receiptNumber');
+        receiptInput.readOnly = true;
+        receiptInput.classList.add('bg-gray-100', 'cursor-not-allowed');
+        
+        async function fetchLastReceiptNumber() {
+            try {
+                const response = await fetch(GOOGLE_SHEET_URL);
+                const result = await response.json();
+                const last = result.last_receipt;
+                const currentYear = new Date().getFullYear();
+                const match = last.match(/VPL-(\d{4})-(\d+)/);
+                const nextNum = match ? parseInt(match[2]) + 1 : 1;
+                const next = `VPL-${currentYear}-${String(nextNum).padStart(3, '0')}`;
+                receiptInput.value = next;
+                updateReceiptPreview(); // Update preview with new number
+            } catch (error) {
+                console.error("❌ Failed to fetch receipt number:", error);
+                receiptInput.value = `VPL-${new Date().getFullYear()}-001`;
+                updateReceiptPreview();
+            }
+        }
+        
+        // --- INITIALIZATION ---
+        fetchLastReceiptNumber();
+        
+        const today = new Date();
+        document.getElementById('receiptDate').value = today.toISOString().split('T')[0];
+        
+        /**
+         * Adds a new item row to the form.
+         * @param {string} [desc=''] The item description/model.
+         * @param {string} [imei=''] The item IMEI.
+         * @param {number} [price=0] The item price.
+         */
+        function addItemRow(desc = '', imei = '', price = 0) {
+            const itemId = Date.now();
+            const itemHtml = `
+                <div class="item-row bg-gray-50 p-3 rounded-md" data-id="${itemId}">
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-2 items-center">
+                        <div class="md:col-span-4"><input type="text" placeholder="Phone Model" class="item-desc w-full px-3 py-1 border border-gray-300 rounded text-sm" value="${desc}"></div>
+                        <div class="md:col-span-3 flex items-center">
+                            <input type="text" placeholder="IMEI" class="item-imei w-full px-3 py-1 border border-gray-300 rounded-l text-sm" value="${imei}">
+                            <button class="scan-btn bg-gray-200 hover:bg-gray-300 p-2 rounded-r" title="Scan Barcode">
+                                <i class="fas fa-barcode"></i>
+                            </button>
+                        </div>
+                        <div class="md:col-span-1"><input type="number" placeholder="Qty" class="item-qty w-full px-3 py-1 border border-gray-300 rounded text-sm" value="1" min="1"></div>
+                        <div class="md:col-span-2"><input type="number" placeholder="Price" class="item-price w-full px-3 py-1 border border-gray-300 rounded text-sm" value="${price || ''}" min="0" step="0.01"></div>
+                        <div class="md:col-span-2 flex items-center justify-end">
+                            <button class="remove-item text-red-500 hover:text-red-700"><i class="fas fa-times"></i></button>
+                        </div>
+                    </div>
+                </div>`;
+            document.getElementById('itemsContainer').insertAdjacentHTML('beforeend', itemHtml);
+            updateReceiptPreview();
+        }
+
+        // --- UI EVENT LISTENERS ---
+        document.getElementById('addItemBtn').addEventListener('click', () => addItemRow());
+        
+        document.getElementById('itemsContainer').addEventListener('click', function (e) {
+            const scanBtn = e.target.closest('.scan-btn');
+            const removeBtn = e.target.closest('.remove-item');
+
+            if (scanBtn) {
+                const imeiInput = scanBtn.previousElementSibling;
+                startScanner(imeiInput);
+            } else if (removeBtn) {
+                const itemRow = removeBtn.closest('.item-row');
+                if (itemRow) {
+                    itemRow.remove();
+                    updateReceiptPreview();
+                }
+            }
+        });
+        
+        const formInputs = ['customerName', 'customerPhone', 'customerId', 'receiptNumber', 'receiptDate', 'paymentMethod', 'user', 'notes'];
+        formInputs.forEach(id => document.getElementById(id).addEventListener('input', updateReceiptPreview));
+        
+        document.getElementById('itemsContainer').addEventListener('input', updateReceiptPreview);
+        
+        document.getElementById('printBtn').addEventListener('click', () => window.print());
+        
+        document.getElementById('downloadBtn').addEventListener('click', function () {
+            const receipt = document.getElementById('receiptPreview');
+            let customerName = document.getElementById('customerName').value.trim() || 'receipt';
+            // Sanitize the customer name to be filesystem-friendly
+            customerName = customerName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+            
+            let imei = '';
+            const firstImeiInput = document.querySelector('.item-imei');
+            if (firstImeiInput && firstImeiInput.value) {
+                // Sanitize the IMEI to be filesystem-friendly
+                imei = '_' + firstImeiInput.value.trim().replace(/[^a-z0-9]/gi, '');
+            }
+
+            html2canvas(receipt, {
+                scale: 3, // Increased scale for better quality on compact receipt
+                logging: false,
+                useCORS: true
+            }).then(canvas => {
+                const link = document.createElement('a');
+                // Use the sanitized and combined name and IMEI for the filename
+                link.download = `${customerName}${imei}_receipt.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        });
+
+        document.getElementById('newSaleBtn').addEventListener('click', function() {
+            document.getElementById('customerName').value = '';
+            document.getElementById('customerPhone').value = '';
+            document.getElementById('customerId').value = '';
+            document.getElementById('notes').value = '';
+            document.getElementById('itemsContainer').innerHTML = '';
+            addItemRow(); // Add one fresh item row
+            fetchLastReceiptNumber(); // Get the next receipt number
+            updateReceiptPreview();
+        });
+        
+        // --- SAVE/GENERATE BUTTON LOGIC (UPDATED) ---
+        document.getElementById('generateBtn').addEventListener('click', function () {
+            updateReceiptPreview(); // Ensure preview is up-to-date before saving
+            const items = [];
+            const itemRows = document.querySelectorAll('.item-row');
+            let total = 0;
+
+            itemRows.forEach(row => {
+                const model = row.querySelector('.item-desc').value || 'Item';
+                const imei = row.querySelector('.item-imei').value || '';
+                const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+                const price = parseFloat(row.querySelector('.item-price').value) || 0;
+                const amount = qty * price;
+                total += amount;
+
+                items.push({ model, imei, qty, price, amount });
+            });
+
+            const receiptDate = document.getElementById('receiptDate').value;
+            const receiptTime = new Date().toLocaleTimeString('en-US', {
+                hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
+            });
+
+            const payload = items.map(item => ({
+                name: document.getElementById('customerName').value,
+                phone: document.getElementById('customerPhone').value,
+                id: document.getElementById('customerId').value,
+                paymentMethod: document.getElementById('paymentMethod').value,
+                user: document.getElementById('user').value,
+                model: item.model,
+                imei: item.imei,
+                qty: item.qty,
+                price: item.price,
+                amount: item.amount,
+                total: total,
+                date: receiptDate,
+                time: receiptTime,
+                receipt_no: document.getElementById('receiptNumber').value
+            }));
+
+            fetch(GOOGLE_SHEET_URL, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(res => {
+                console.log('✅ Saved:', res);
+                showNotification('✅ Receipt saved successfully!');
+                fetchLastReceiptNumber(); // Refresh for new sale
+            })
+            .catch(err => {
+                console.error('❌ Error saving receipt:', err);
+                showNotification(`❌ Failed to save receipt. ${err.message}`, 'error');
+            });
+        });
+        
+        // --- RECEIPT PREVIEW UPDATE FUNCTION (MODIFIED FOR COMPACT LAYOUT) ---
+        function updateReceiptPreview() {
+            document.getElementById('previewCustomer').textContent = document.getElementById('customerName').value || 'N/A';
+            document.getElementById('previewPhone').textContent = document.getElementById('customerPhone').value || 'N/A';
+            document.getElementById('previewId').textContent = document.getElementById('customerId').value || 'N/A';
+            document.getElementById('previewReceiptNo').textContent = document.getElementById('receiptNumber').value || 'N/A';
+
+            const dateInput = document.getElementById('receiptDate').value;
+            const now = new Date();
+            if (dateInput) {
+                const date = new Date(dateInput);
+                const timezoneOffset = date.getTimezoneOffset() * 60000;
+                const adjustedDate = new Date(date.getTime() + timezoneOffset);
+                document.getElementById('previewDate').textContent = adjustedDate.toLocaleDateString('en-GB'); // Use DD/MM/YYYY
+            } else {
+                document.getElementById('previewDate').textContent = now.toLocaleDateString('en-GB');
+            }
+
+            document.getElementById('previewTime').textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+            document.getElementById('previewPaymentMethod').textContent = document.getElementById('paymentMethod').value;
+            document.getElementById('previewUser').textContent = document.getElementById('user').value || 'N/A';
+            document.getElementById('previewNotes').textContent = document.getElementById('notes').value || 'None';
+
+            const itemsContainer = document.getElementById('previewItems');
+            itemsContainer.innerHTML = '';
+            let subtotal = 0;
+            const itemRows = document.querySelectorAll('.item-row');
+
+            itemRows.forEach(row => {
+                const desc = row.querySelector('.item-desc').value || 'Item';
+                const imei = row.querySelector('.item-imei').value || '';
+                const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+                const price = parseFloat(row.querySelector('.item-price').value) || 0;
+                const amount = qty * price;
+                subtotal += amount;
+
+                // ** NEW COMPACT ITEM HTML **
+                const itemHtml = `
+                    <div class="receipt-line py-1">
+                        <div class="flex">
+                            <div class="flex-grow">${desc}</div>
+                            <div class="w-12 text-right">${qty}</div>
+                            <div class="w-20 text-right font-semibold">${amount.toLocaleString('en-US')}</div>
+                        </div>
+                        ${imei ? `<div class="text-gray-500">IMEI: ${imei}</div>` : ''}
+                    </div>`;
+                itemsContainer.insertAdjacentHTML('beforeend', itemHtml);
+            });
+
+            if (itemRows.length === 0) {
+                itemsContainer.innerHTML = `<div class="text-center text-gray-500 py-2">No items added.</div>`;
+            }
+
+            const totalsContainer = document.getElementById('totalsContainer');
+            totalsContainer.innerHTML = `
+                <div class="flex justify-between receipt-total py-2 text-sm">
+                    <span>GROSS TOTAL</span>
+                    <span>Ksh ${subtotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                </div>`;
+        }
+        
+        // Start with one item row and initial preview
+        addItemRow();
         updateReceiptPreview();
-      });
-      
-      // --- SAVE/GENERATE BUTTON LOGIC (UPDATED) ---
-      document.getElementById('generateBtn').addEventListener('click', function () {
-        updateReceiptPreview(); // Ensure preview is up-to-date before saving
-        const items = [];
-        const itemRows = document.querySelectorAll('.item-row');
-        let total = 0;
-
-        itemRows.forEach(row => {
-          const model = row.querySelector('.item-desc').value || 'Item';
-          const imei = row.querySelector('.item-imei').value || '';
-          const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
-          const price = parseFloat(row.querySelector('.item-price').value) || 0;
-          const amount = qty * price;
-          total += amount;
-
-          items.push({ model, imei, qty, price, amount });
-        });
-
-        const receiptDate = document.getElementById('receiptDate').value;
-        const receiptTime = new Date().toLocaleTimeString('en-US', {
-          hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
-        });
-
-        const payload = items.map(item => ({
-          name: document.getElementById('customerName').value,
-          phone: document.getElementById('customerPhone').value,
-          id: document.getElementById('customerId').value,
-          paymentMethod: document.getElementById('paymentMethod').value,
-          user: document.getElementById('user').value,
-          model: item.model,
-          imei: item.imei,
-          qty: item.qty,
-          price: item.price,
-          amount: item.amount,
-          total: total,
-          date: receiptDate,
-          time: receiptTime,
-          receipt_no: document.getElementById('receiptNumber').value
-        }));
-
-        fetch(GOOGLE_SHEET_URL, {
-          method: 'POST',
-          body: JSON.stringify(payload)
-        })
-          .then(res => res.json())
-          .then(res => {
-            console.log('✅ Saved:', res);
-            showNotification('✅ Receipt saved successfully!');
-            fetchLastReceiptNumber(); // Refresh for new sale
-          })
-          .catch(err => {
-            console.error('❌ Error saving receipt:', err);
-            showNotification(`❌ Failed to save receipt. ${err.message}`, 'error');
-          });
-      });
-      
-      // --- RECEIPT PREVIEW UPDATE FUNCTION ---
-      function updateReceiptPreview() {
-        document.getElementById('previewCustomer').textContent = document.getElementById('customerName').value || 'Customer Name';
-        document.getElementById('previewPhone').textContent = document.getElementById('customerPhone').value || 'Phone Number';
-        document.getElementById('previewId').querySelector('span').textContent = document.getElementById('customerId').value || 'Not provided';
-        document.getElementById('previewReceiptNo').textContent = document.getElementById('receiptNumber').value || 'VPL-2025-001';
-
-        const dateInput = document.getElementById('receiptDate').value;
-        const now = new Date();
-        if (dateInput) {
-          const date = new Date(dateInput);
-          const timezoneOffset = date.getTimezoneOffset() * 60000;
-          const adjustedDate = new Date(date.getTime() + timezoneOffset);
-          document.getElementById('previewDate').textContent = adjustedDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-        } else {
-            document.getElementById('previewDate').textContent = now.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-        }
-
-        document.getElementById('previewTime').textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
-        document.getElementById('previewPaymentMethod').textContent = document.getElementById('paymentMethod').value;
-        document.getElementById('previewUser').textContent = document.getElementById('user').value || 'eugene';
-        document.getElementById('previewNotes').textContent = document.getElementById('notes').value || '';
-
-        const itemsContainer = document.getElementById('previewItems');
-        itemsContainer.innerHTML = '';
-        let subtotal = 0;
-        const itemRows = document.querySelectorAll('.item-row');
-
-        itemRows.forEach(row => {
-          const desc = row.querySelector('.item-desc').value || 'Item';
-          const imei = row.querySelector('.item-imei').value || '';
-          const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
-          const price = parseFloat(row.querySelector('.item-price').value) || 0;
-          const amount = qty * price;
-          subtotal += amount;
-
-          const itemHtml = `
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-2 py-3 receipt-line">
-              <div class="md:col-span-4 font-medium md:font-normal">${desc}</div>
-              <div class="md:col-span-3 text-sm text-gray-600 md:text-base md:text-gray-800">
-                <span class="md:hidden font-medium">IMEI: </span>${imei}
-              </div>
-              <div class="md:col-span-1 text-right"><span class="md:hidden font-medium">Qty: </span>${qty}</div>
-              <div class="md:col-span-2 text-right"><span class="md:hidden font-medium">Price: </span>Ksh ${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-              <div class="md:col-span-2 text-right font-medium"><span class="md:hidden">Amount: </span>Ksh ${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-            </div>`;
-          itemsContainer.insertAdjacentHTML('beforeend', itemHtml);
-        });
-
-        if (itemRows.length === 0) {
-          itemsContainer.innerHTML = `
-            <div class="text-center text-gray-500 py-4">No items added.</div>`;
-        }
-
-        const totalsContainer = document.getElementById('totalsContainer');
-        totalsContainer.innerHTML = `
-          <div class="grid grid-cols-12 gap-2 py-3 receipt-total font-bold text-lg">
-            <div class="col-span-8">Gross Total</div>
-            <div class="col-span-4 text-right">Ksh ${subtotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-          </div>`;
-      }
-      
-      // Start with one item row and initial preview
-      addItemRow();
-      updateReceiptPreview();
     });
-  </script>
+    </script>
 </body>
 </html>
