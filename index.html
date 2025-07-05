@@ -2,161 +2,439 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>VEE PLUS INTERNATIONAL LIMITED</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    .bg-veeplus {
-      background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-    }
-    .login-box {
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    }
-    .input-field {
-      transition: all 0.3s ease;
-    }
-    .input-field:focus {
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
-    }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
     body {
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
+      font-family: 'Inter', sans-serif;
+      -webkit-user-select: none; user-select: none;
+    }
+    .bg-veeplus { background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%); }
+    .form-container { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
+    .input-field:focus { box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5); }
+    .btn-primary {
+        transition: background-color 0.3s, transform 0.2s;
+    }
+    .btn-primary:hover {
+        transform: translateY(-2px);
+    }
+    .avatar {
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .avatar:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+    }
+    .loader {
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid #3b82f6; /* blue-500 */
+        border-radius: 50%;
+        width: 16px;
+        height: 16px;
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+        20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+    .shake {
+        animation: shake 0.5s;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4" oncontextmenu="return false">
-  <div class="max-w-md w-full bg-white rounded-xl overflow-hidden login-box">
-    <div class="bg-veeplus py-6 px-8 text-center">
-      <div class="flex justify-center mb-4">
-        <div class="bg-white p-3 rounded-full">
-          <i class="fas fa-building text-blue-800 text-3xl"></i>
+  <div class="max-w-md w-full">
+    <!-- Login View -->
+    <div id="loginView" class="bg-white rounded-xl overflow-hidden form-container">
+        <div class="bg-veeplus py-6 px-8 text-center">
+            <div class="flex justify-center mb-4">
+                <div class="bg-white p-3 rounded-full">
+                    <i class="fas fa-building text-blue-800 text-3xl"></i>
+                </div>
+            </div>
+            <h1 class="text-2xl font-bold text-white">VEE PLUS INTERNATIONAL LIMITED</h1>
+            <p class="text-blue-200 mt-1">Secure Enterprise Portal</p>
         </div>
-      </div>
-      <h1 class="text-2xl font-bold text-white">VEE PLUS INTERNATIONAL LIMITED</h1>
-      <p class="text-blue-200 mt-1">Secure Enterprise Portal</p>
+        <div class="px-8 py-6">
+            <!-- Greeting and Date/Time Display -->
+            <div id="greetingContainer" class="text-center mb-6 bg-gray-50 p-4 rounded-lg">
+                <h2 id="greeting" class="text-2xl font-semibold text-gray-700"></h2>
+                <p id="dateTime" class="text-sm text-gray-500 mt-1"></p>
+            </div>
+
+            <!-- Avatar Quick Login -->
+            <div id="avatarContainer" class="mb-4 text-center hidden">
+                <p class="text-sm font-medium text-gray-600 mb-3">Quick Login</p>
+                <div id="avatarProfiles" class="flex justify-center gap-4 flex-wrap">
+                    <!-- Avatars will be injected here -->
+                </div>
+                <div class="relative flex py-4 items-center">
+                    <div class="flex-grow border-t border-gray-200"></div>
+                    <span class="flex-shrink mx-4 text-gray-400 text-xs">OR</span>
+                    <div class="flex-grow border-t border-gray-200"></div>
+                </div>
+            </div>
+
+            <div id="loginMessage" class="hidden p-3 rounded-md mb-4 text-sm text-center"></div>
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label for="loginUsername" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fas fa-user text-gray-400"></i></div>
+                        <input type="text" id="loginUsername" class="input-field pl-10 block w-full rounded-md border-gray-300 shadow-sm py-2 px-3 border" placeholder="Enter username" required>
+                    </div>
+                </div>
+                <div>
+                    <label for="loginPassword" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fas fa-lock text-gray-400"></i></div>
+                        <input type="password" id="loginPassword" class="input-field pl-10 pr-10 block w-full rounded-md border-gray-300 shadow-sm py-2 px-3 border" placeholder="Enter password" required>
+                        <button type="button" id="toggleLoginPassword" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"><i class="fas fa-eye"></i></button>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between text-sm">
+                     <a href="mailto:eugeneasande@icloud.com" class="font-medium text-blue-600 hover:text-blue-500">Forgot password?</a>
+                </div>
+                <div class="pt-2">
+                    <button type="submit" class="w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 btn-primary">
+                        <span class="btn-text">Sign In</span>
+                        <div class="loader hidden ml-2"></div>
+                    </button>
+                </div>
+            </form>
+            <div class="mt-6 text-center text-sm">
+                <p class="text-gray-600">Don't have an account? <a href="#" id="showRegisterView" class="font-medium text-blue-600 hover:text-blue-500">Create one</a></p>
+            </div>
+        </div>
     </div>
 
-    <div class="px-8 py-6">
-      <div id="error-message" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4"></div>
-
-      <form id="loginForm" class="space-y-6">
-        <div>
-          <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
-          <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <i class="fas fa-user text-gray-400"></i>
+    <!-- Register View -->
+    <div id="registerView" class="hidden bg-white rounded-xl overflow-hidden form-container">
+        <div class="bg-veeplus py-6 px-8 text-center">
+            <div class="flex justify-center mb-3">
+                <div class="bg-white p-3 rounded-full shadow-md">
+                    <i class="fas fa-user-plus text-blue-800 text-3xl"></i>
+                </div>
             </div>
-            <input type="text" id="username" name="username" class="input-field pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 px-3 border" placeholder="Enter username">
-          </div>
+            <h1 class="text-2xl font-bold text-white">Create New Account</h1>
+            <p class="text-blue-200 mt-1">Join the Portal</p>
         </div>
-
-        <div>
-          <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-          <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <i class="fas fa-lock text-gray-400"></i>
+        <div class="px-8 py-6">
+            <!-- Token Generation Step -->
+            <div id="tokenStep">
+                <p class="text-center text-gray-600 mb-4">First, you need a registration token from the administrator.</p>
+                <div id="tokenMessage" class="hidden p-3 rounded-md mb-4 text-sm text-center"></div>
+                <button id="generateTokenBtn" type="button" class="w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 btn-primary">
+                    <span class="btn-text">1. Generate My Token ID</span>
+                    <div class="loader hidden ml-2"></div>
+                </button>
+                 <div id="whatsappPrompt" class="hidden mt-4 p-3 bg-green-50 border border-green-200 rounded-lg text-center">
+                    <p class="text-green-800 font-medium">Your Token ID has been generated!</p>
+                    <p class="text-sm text-green-700 mt-2">Please send this ID to the administrator on WhatsApp to receive your unique registration token.</p>
+                     <a id="whatsappLink" href="#" target="_blank" class="mt-3 inline-block bg-green-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-700">
+                        <i class="fab fa-whatsapp mr-2"></i>Contact Admin
+                    </a>
+                </div>
+                <button id="proceedToRegisterBtn" type="button" class="hidden mt-4 w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 btn-primary">
+                    <span class="btn-text">2. I have my token, proceed</span>
+                    <div class="loader hidden ml-2"></div>
+                </button>
             </div>
-            <input type="password" id="password" name="password" class="input-field pl-10 pr-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 px-3 border" placeholder="Enter password">
-            <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
-              <i class="fas fa-eye"></i>
-            </button>
-          </div>
-        </div>
 
-        <div class="flex items-center justify-between">
-          <div class="flex items-center">
-            <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">Remember Me
-          </div>
+            <!-- Registration Form Step -->
+            <form id="registerForm" class="hidden space-y-4">
+                 <p class="text-center text-gray-600 text-sm">Step 2: Enter your details and the token provided by the admin.</p>
+                <div>
+                    <label for="registerUsername" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                    <div class="relative">
+                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fas fa-user text-gray-400"></i></div>
+                         <input type="text" id="registerUsername" class="input-field pl-10 block w-full rounded-md border-gray-300 shadow-sm py-2 px-3 border" placeholder="Choose a username" required>
+                    </div>
+                </div>
+                <div>
+                    <label for="registerPassword" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fas fa-lock text-gray-400"></i></div>
+                        <input type="password" id="registerPassword" class="input-field pl-10 pr-10 block w-full rounded-md border-gray-300 shadow-sm py-2 px-3 border" placeholder="Create a password" required>
+                        <button type="button" id="toggleRegisterPassword" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"><i class="fas fa-eye"></i></button>
+                    </div>
+                </div>
+                <div>
+                    <label for="registerToken" class="block text-sm font-medium text-gray-700 mb-1">Registration Token</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fas fa-key text-gray-400"></i></div>
+                        <input type="text" id="registerToken" class="input-field pl-10 block w-full rounded-md border-gray-300 shadow-sm py-2 px-3 border" placeholder="Enter token from admin" required>
+                    </div>
+                </div>
+                <div class="pt-2">
+                    <button type="submit" class="w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 btn-primary">
+                        <span class="btn-text">Create Account</span>
+                        <div class="loader hidden ml-2"></div>
+                    </button>
+                </div>
+            </form>
+            <div class="mt-6 text-center text-sm">
+                <p class="text-gray-600">Already have an account? <a href="#" id="showLoginView" class="font-medium text-blue-600 hover:text-blue-500">Sign in</a></p>
+            </div>
         </div>
-
-        <div>
-          <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
-            Sign in
-            <i class="fas fa-arrow-right ml-2"></i>
-          </button>
-        </div>
-      </form>
-
-      <!-- Version Badge -->
-      <div class="mt-4 text-center">
-        <p style="font-family: 'Comic Sans MS'; background-color: #f0f0f0; display: inline-block; padding: 4px 10px; border-radius: 8px;">
-          VEE PLUS <span style="color: #007bff;">v3.2.0 (stable)</span>
-        </p>
-      </div>
-
-      <div class="mt-6">
-        <div class="relative">
-          <div class="absolute inset-0 flex items-center">
-            <div class="w-full border-t border-gray-300"></div>
-          </div>
-          <div class="relative flex justify-center text-sm">
-            <span class="px-2 bg-white text-gray-500">Need help?</span>
-          </div>
-        </div>
-
-        <div class="mt-4 text-center">
-          <p class="text-sm text-gray-600">
-            Contact IT support at
-            <a href="mailto:eugeneasande@icloud.com" class="font-medium text-blue-600 hover:text-blue-500">IT@VeePlus</a>
-          </p>
-        </div>
-      </div>
     </div>
   </div>
 
-  <script>
-    document.addEventListener('keydown', function(e) {
-      if (e.keyCode === 123 || 
-          (e.ctrlKey && e.shiftKey && e.keyCode === 73) || 
-          (e.ctrlKey && e.shiftKey && e.keyCode === 74) || 
-          (e.ctrlKey && e.keyCode === 85)) {
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyBVtGdXlfD2upvZlxIDSPakcML22aOSXBWSiAOrWyMF_20oMldZXTVl-LGeErGyuHK/exec';
+
+    // --- DOM Elements ---
+    const loginView = document.getElementById('loginView');
+    const registerView = document.getElementById('registerView');
+    const showRegisterViewBtn = document.getElementById('showRegisterView');
+    const showLoginViewBtn = document.getElementById('showLoginView');
+    const avatarContainer = document.getElementById('avatarContainer');
+    const avatarProfiles = document.getElementById('avatarProfiles');
+
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const loginMessage = document.getElementById('loginMessage');
+    
+    const tokenStep = document.getElementById('tokenStep');
+    const generateTokenBtn = document.getElementById('generateTokenBtn');
+    const tokenMessage = document.getElementById('tokenMessage');
+    const whatsappPrompt = document.getElementById('whatsappPrompt');
+    const whatsappLink = document.getElementById('whatsappLink');
+    const proceedToRegisterBtn = document.getElementById('proceedToRegisterBtn');
+    
+    const toggleLoginPassword = document.getElementById('toggleLoginPassword');
+    const toggleRegisterPassword = document.getElementById('toggleRegisterPassword');
+
+    const greetingEl = document.getElementById('greeting');
+    const dateTimeEl = document.getElementById('dateTime');
+
+    // --- Helper Functions ---
+    const showMessage = (el, message, isError = false) => {
+        el.textContent = message;
+        el.className = `p-3 rounded-md mb-4 text-sm text-center ${isError ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-800'}`;
+        el.classList.remove('hidden');
+        if (isError) {
+            el.closest('.form-container').classList.add('shake');
+            setTimeout(() => el.closest('.form-container').classList.remove('shake'), 500);
+        }
+    };
+
+    const togglePasswordVisibility = (input, button) => {
+        const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+        input.setAttribute('type', type);
+        button.querySelector('i').classList.toggle('fa-eye');
+        button.querySelector('i').classList.toggle('fa-eye-slash');
+    };
+
+    toggleLoginPassword.addEventListener('click', () => togglePasswordVisibility(document.getElementById('loginPassword'), toggleLoginPassword));
+    toggleRegisterPassword.addEventListener('click', () => togglePasswordVisibility(document.getElementById('registerPassword'), toggleRegisterPassword));
+
+    const toggleLoader = (button, isLoading) => {
+        const btnText = button.querySelector('.btn-text');
+        const loader = button.querySelector('.loader');
+        if (isLoading) {
+            button.disabled = true;
+            btnText.classList.add('hidden');
+            loader.classList.remove('hidden');
+        } else {
+            button.disabled = false;
+            btnText.classList.remove('hidden');
+            loader.classList.add('hidden');
+        }
+    };
+
+    // --- Greeting and Date/Time Logic ---
+    const updateDateTime = () => {
+        const now = new Date();
+        const hour = now.getHours();
+
+        let greetingText;
+        if (hour < 12) {
+            greetingText = 'Good Morning';
+        } else if (hour < 18) {
+            greetingText = 'Good Afternoon';
+        } else {
+            greetingText = 'Good Evening';
+        }
+        greetingEl.textContent = greetingText;
+
+        const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+        
+        const dateString = now.toLocaleDateString('en-US', dateOptions);
+        const timeString = now.toLocaleTimeString('en-US', timeOptions);
+
+        dateTimeEl.textContent = `${dateString} | ${timeString}`;
+    };
+
+
+    // --- View Toggling ---
+    showRegisterViewBtn.addEventListener('click', (e) => {
         e.preventDefault();
-      }
+        loginView.classList.add('hidden');
+        registerView.classList.remove('hidden');
     });
 
-    document.getElementById('loginForm').addEventListener('submit', function (e) {
-      e.preventDefault();
-      const username = document.getElementById('username').value.trim().toLowerCase();
-      const password = document.getElementById('password').value.trim();
-      const errorMessage = document.getElementById('error-message');
-
-      if (username === 'purity' && password === 'Purity@12345') {
-        localStorage.setItem('user', 'purity');
-        localStorage.setItem('role', 'agent');
-        window.location.href = 'vee.html';
-      } else if (username === 'admin' && password === 'Admin@12345') {
-        localStorage.setItem('user', 'admin');
-        localStorage.setItem('role', 'admin');
-        window.location.href = 'admin.html';
-      } else {
-        errorMessage.textContent = 'Invalid username or password.';
-        errorMessage.classList.remove('hidden');
-        errorMessage.style.animation = 'shake 0.5s';
-        setTimeout(() => errorMessage.style.animation = '', 500);
-      }
+    showLoginViewBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        registerView.classList.add('hidden');
+        loginView.classList.remove('hidden');
     });
 
-    const togglePassword = document.getElementById('togglePassword');
-    const passwordInput = document.getElementById('password');
-    togglePassword.addEventListener('click', function() {
-      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-      passwordInput.setAttribute('type', type);
-      this.querySelector('i').classList.toggle('fa-eye');
-      this.querySelector('i').classList.toggle('fa-eye-slash');
+    // --- Avatar Quick Login ---
+    const loadAvatars = () => {
+        const users = JSON.parse(localStorage.getItem('veePlusUsers') || '[]');
+        if (users.length > 0) {
+            avatarContainer.classList.remove('hidden');
+            avatarProfiles.innerHTML = '';
+            users.forEach(username => {
+                const avatarEl = document.createElement('button');
+                avatarEl.className = 'avatar text-center group';
+                avatarEl.dataset.username = username;
+                const initial = username.charAt(0).toUpperCase();
+                avatarEl.innerHTML = `
+                    <div class="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center group-hover:bg-blue-100 transition">
+                        <span class="text-2xl font-bold text-slate-600 group-hover:text-blue-600">${initial}</span>
+                    </div>
+                    <p class="mt-2 text-sm font-semibold text-slate-700">${username}</p>
+                `;
+                avatarEl.addEventListener('click', () => {
+                    document.getElementById('loginUsername').value = username;
+                    document.getElementById('loginPassword').focus();
+                });
+                avatarProfiles.appendChild(avatarEl);
+            });
+        }
+    };
+
+    const saveUserToLocalStorage = (username) => {
+        let users = JSON.parse(localStorage.getItem('veePlusUsers') || '[]');
+        if (!users.includes(username)) {
+            users.push(username);
+            localStorage.setItem('veePlusUsers', JSON.stringify(users));
+        }
+    };
+
+    // --- Login Logic ---
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const button = loginForm.querySelector('button[type="submit"]');
+        toggleLoader(button, true);
+        const username = document.getElementById('loginUsername').value;
+        const password = document.getElementById('loginPassword').value;
+
+        try {
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'login', username, password }),
+            });
+            const result = await response.json();
+            
+            if (result.success) {
+                showMessage(loginMessage, 'Login successful! Redirecting...', false);
+                saveUserToLocalStorage(username);
+                localStorage.setItem('sessionUser', username);
+                setTimeout(() => {
+                    // Modify this redirection logic as needed for Vee Plus
+                    window.location.href = (username.toLowerCase() === 'admin') ? 'admin.html' : 'vee.html';
+                }, 1000);
+            } else {
+                showMessage(loginMessage, result.message, true);
+            }
+        } catch (error) {
+            showMessage(loginMessage, 'An error occurred. Please try again.', true);
+        } finally {
+            toggleLoader(button, false);
+        }
     });
 
-    const style = document.createElement('style');
-    style.textContent = `
-      @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-        20%, 40%, 60%, 80% { transform: translateX(5px); }
-      }
-    `;
-    document.head.appendChild(style);
-  </script>
+    // --- Token Generation Logic ---
+    generateTokenBtn.addEventListener('click', async () => {
+        toggleLoader(generateTokenBtn, true);
+        try {
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'generateToken' }),
+            });
+            const result = await response.json();
+
+            if (result.success) {
+                const tokenId = result.tokenId;
+                whatsappLink.href = `https://wa.me/254722163568?text=Hello%2C%20I%20need%20a%20registration%20token.%20My%20Token%20ID%20is%3A%20${tokenId}`;
+                
+                showMessage(tokenMessage, `Your Token ID is: ${tokenId}. Send this to the admin.`, false);
+                whatsappPrompt.classList.remove('hidden');
+                generateTokenBtn.classList.add('hidden');
+                proceedToRegisterBtn.classList.remove('hidden');
+
+            } else {
+                showMessage(tokenMessage, result.message, true);
+            }
+        } catch(error) {
+            showMessage(tokenMessage, 'Could not generate token. Please try again.', true);
+        } finally {
+            toggleLoader(generateTokenBtn, false);
+        }
+    });
+
+    // --- Proceed to Registration Logic ---
+    proceedToRegisterBtn.addEventListener('click', () => {
+        tokenStep.classList.add('hidden');
+        registerForm.classList.remove('hidden');
+    });
+
+
+    // --- Registration Logic ---
+    registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const button = registerForm.querySelector('button[type="submit"]');
+        toggleLoader(button, true);
+        const username = document.getElementById('registerUsername').value;
+        const password = document.getElementById('registerPassword').value;
+        const token = document.getElementById('registerToken').value;
+
+        try {
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'register', username, password, token }),
+            });
+            const result = await response.json();
+
+            if (result.success) {
+                showMessage(tokenMessage, 'Registration successful! You can now log in.', false);
+                 setTimeout(() => {
+                     registerView.classList.add('hidden');
+                     loginView.classList.remove('hidden');
+                     loadAvatars();
+                 }, 2000);
+            } else {
+                showMessage(tokenMessage, result.message, true);
+            }
+        } catch (error) {
+            showMessage(tokenMessage, 'An error occurred. Please try again.', true);
+        } finally {
+            toggleLoader(button, false);
+        }
+    });
+
+    // --- Initial Load ---
+    loadAvatars();
+    updateDateTime(); // Set initial time
+    setInterval(updateDateTime, 1000); // Update time every second
+});
+</script>
 </body>
 </html>
