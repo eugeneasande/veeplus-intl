@@ -77,17 +77,35 @@
     .evening-theme i { color: #fde047; }
     
     /* Custom Notification Modal Styles */
-    #notificationModal {
+    #notificationModal, #initial-notification-banner {
         transition: opacity 0.3s ease, transform 0.3s ease;
     }
     .notification-success { background-color: #22c55e; }
     .notification-error { background-color: #ef4444; }
 
+    /* Initial Page Load Notification Banner Styles */
+    @keyframes fade-in-out-banner {
+        0% { opacity: 0; transform: translateY(-100%); }
+        5% { opacity: 1; transform: translateY(0); }
+        95% { opacity: 1; transform: translateY(0); }
+        100% { opacity: 0; transform: translateY(-100%); }
+    }
+
+    #initial-notification-banner {
+        animation: fade-in-out-banner 25s ease-in-out forwards;
+        z-index: 1000;
+    }
+
   </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4" oncontextmenu="return false">
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4 overflow-x-hidden" oncontextmenu="return false">
   
-  <!-- Custom Notification Modal -->
+  <div id="initial-notification-banner" class="fixed top-0 left-0 right-0 bg-blue-600 text-white py-2 px-4 text-center text-sm shadow-lg">
+    <i class="fas fa-info-circle mr-2"></i>
+    You can now create your own account! Click "Create one" below to get started.
+  </div>
+
+  <!-- Custom Success/Error Notification Modal -->
   <div id="notificationModal" class="fixed top-5 right-5 p-4 rounded-lg text-white font-semibold shadow-lg z-[100] opacity-0 -translate-y-10 pointer-events-none">
       <span id="notificationMessage"></span>
   </div>
@@ -181,7 +199,7 @@
                     <p class="text-green-800 font-medium">Your Token ID has been generated!</p>
                     <p class="text-sm text-green-700 mt-2">Please send this ID to the administrator on WhatsApp to receive your unique registration token.</p>
                      <a id="whatsappLink" href="#" target="_blank" class="mt-3 inline-block bg-green-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-700">
-                        <i class="fab fa-whatsapp mr-2"></i>Click to Contact Admin
+                        <i class="fab fa-whatsapp mr-2"></i>Contact Admin
                     </a>
                 </div>
                 <button id="proceedToRegisterBtn" type="button" class="hidden mt-4 w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 btn-primary">
