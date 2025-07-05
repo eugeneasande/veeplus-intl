@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>DRONGO AUTONOMOUS - Secure Portal</title>
+  <title>VEE PLUS INTERNATIONAL LIMITED</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -12,9 +12,9 @@
       font-family: 'Inter', sans-serif;
       -webkit-user-select: none; user-select: none;
     }
-    .bg-drongo { background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%); }
+    .bg-veeplus { background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%); }
     .form-container { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
-    .input-field:focus { box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.5); }
+    .input-field:focus { box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5); }
     .btn-primary {
         transition: background-color 0.3s, transform 0.2s;
     }
@@ -30,7 +30,7 @@
     }
     .loader {
         border: 2px solid #f3f3f3;
-        border-top: 2px solid #0d9488;
+        border-top: 2px solid #3b82f6; /* blue-500 */
         border-radius: 50%;
         width: 16px;
         height: 16px;
@@ -48,24 +48,52 @@
     .shake {
         animation: shake 0.5s;
     }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    #greetingContainer {
+        transition: background-color 0.5s, color 0.5s;
+        border-radius: 0.75rem;
+        padding: 1rem;
+        animation: fadeIn 0.8s ease-out;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+    .morning-theme { background: linear-gradient(135deg, #7dd3fc, #0ea5e9); }
+    .afternoon-theme { background: linear-gradient(135deg, #38bdf8, #0284c7); }
+    .evening-theme { background: linear-gradient(135deg, #1e3a8a, #4c1d95); }
+    
+    .morning-theme #greeting, .morning-theme #dateTime,
+    .afternoon-theme #greeting, .afternoon-theme #dateTime,
+    .evening-theme #greeting, .evening-theme #dateTime {
+        color: white;
+    }
+    #greeting i {
+        margin-right: 0.75rem;
+        text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+    }
+    .morning-theme i { color: #fef08a; }
+    .afternoon-theme i { color: #fde047; }
+    .evening-theme i { color: #fde047; }
+
   </style>
 </head>
-<body class="bg-slate-100 min-h-screen flex items-center justify-center p-4" oncontextmenu="return false">
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4" oncontextmenu="return false">
   <div class="max-w-md w-full">
     <!-- Login View -->
     <div id="loginView" class="bg-white rounded-xl overflow-hidden form-container">
-        <div class="bg-drongo py-6 px-8 text-center">
-            <div class="flex justify-center mb-3">
-                <div class="bg-white p-3 rounded-full shadow-md">
-                    <i class="fas fa-shield-alt text-teal-800 text-3xl"></i>
+        <div class="bg-veeplus py-6 px-8 text-center">
+            <div class="flex justify-center mb-4">
+                <div class="bg-white p-3 rounded-full">
+                    <i class="fas fa-building text-blue-800 text-3xl"></i>
                 </div>
             </div>
-            <h1 class="text-2xl font-bold text-white">DRONGO AUTONOMOUS</h1>
-            <p class="text-teal-200 mt-1">Secure Login</p>
+            <h1 class="text-2xl font-bold text-white">VEE PLUS INTERNATIONAL LIMITED</h1>
+            <p class="text-blue-200 mt-1">Secure Enterprise Portal</p>
         </div>
         <div class="px-8 py-6">
             <!-- Greeting and Date/Time Display -->
-            <div id="greetingContainer" class="text-center mb-6">
+            <div id="greetingContainer" class="text-center mb-6 rounded-lg">
                 <h2 id="greeting" class="text-2xl font-semibold text-gray-700"></h2>
                 <p id="dateTime" class="text-sm text-gray-500 mt-1"></p>
             </div>
@@ -101,31 +129,31 @@
                     </div>
                 </div>
                 <div class="flex items-center justify-between text-sm">
-                    <a href="https://wa.me/254722163568?text=I%20forgot%20my%20password.%20My%20username%20is%3A%20" target="_blank" class="font-medium text-teal-600 hover:text-teal-500">Forgot password?</a>
+                     <a id="forgotPasswordLink" href="#" target="_blank" class="font-medium text-blue-600 hover:text-blue-500">Forgot password?</a>
                 </div>
                 <div class="pt-2">
-                    <button type="submit" class="w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 btn-primary">
+                    <button type="submit" class="w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 btn-primary">
                         <span class="btn-text">Sign In</span>
                         <div class="loader hidden ml-2"></div>
                     </button>
                 </div>
             </form>
             <div class="mt-6 text-center text-sm">
-                <p class="text-gray-600">Don't have an account? <a href="#" id="showRegisterView" class="font-medium text-teal-600 hover:text-teal-500">Create one</a></p>
+                <p class="text-gray-600">Don't have an account? <a href="#" id="showRegisterView" class="font-medium text-blue-600 hover:text-blue-500">Create one</a></p>
             </div>
         </div>
     </div>
 
     <!-- Register View -->
     <div id="registerView" class="hidden bg-white rounded-xl overflow-hidden form-container">
-        <div class="bg-drongo py-6 px-8 text-center">
+        <div class="bg-veeplus py-6 px-8 text-center">
             <div class="flex justify-center mb-3">
                 <div class="bg-white p-3 rounded-full shadow-md">
-                    <i class="fas fa-user-plus text-teal-800 text-3xl"></i>
+                    <i class="fas fa-user-plus text-blue-800 text-3xl"></i>
                 </div>
             </div>
             <h1 class="text-2xl font-bold text-white">Create New Account</h1>
-            <p class="text-teal-200 mt-1">Join the Portal</p>
+            <p class="text-blue-200 mt-1">Join the Portal</p>
         </div>
         <div class="px-8 py-6">
             <!-- Token Generation Step -->
@@ -136,13 +164,17 @@
                     <span class="btn-text">1. Generate My Token ID</span>
                     <div class="loader hidden ml-2"></div>
                 </button>
-                <div id="whatsappPrompt" class="hidden mt-4 p-3 bg-green-50 border border-green-200 rounded-lg text-center">
+                 <div id="whatsappPrompt" class="hidden mt-4 p-3 bg-green-50 border border-green-200 rounded-lg text-center">
                     <p class="text-green-800 font-medium">Your Token ID has been generated!</p>
                     <p class="text-sm text-green-700 mt-2">Please send this ID to the administrator on WhatsApp to receive your unique registration token.</p>
-                    <a href="https://wa.me/254722163568?text=Hello%2C%20I%20need%20a%20registration%20token.%20My%20Token%20ID%20is%3A%20" target="_blank" class="mt-3 inline-block bg-green-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-700">
+                     <a id="whatsappLink" href="#" target="_blank" class="mt-3 inline-block bg-green-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-700">
                         <i class="fab fa-whatsapp mr-2"></i>Contact Admin
                     </a>
                 </div>
+                <button id="proceedToRegisterBtn" type="button" class="hidden mt-4 w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 btn-primary">
+                    <span class="btn-text">2. I have my token, proceed</span>
+                    <div class="loader hidden ml-2"></div>
+                </button>
             </div>
 
             <!-- Registration Form Step -->
@@ -150,25 +182,35 @@
                  <p class="text-center text-gray-600 text-sm">Step 2: Enter your details and the token provided by the admin.</p>
                 <div>
                     <label for="registerUsername" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
-                    <input type="text" id="registerUsername" class="input-field block w-full rounded-md border-gray-300 shadow-sm py-2 px-3 border" placeholder="Choose a username" required>
+                    <div class="relative">
+                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fas fa-user text-gray-400"></i></div>
+                         <input type="text" id="registerUsername" class="input-field pl-10 block w-full rounded-md border-gray-300 shadow-sm py-2 px-3 border" placeholder="Choose a username" required>
+                    </div>
                 </div>
                 <div>
                     <label for="registerPassword" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                    <input type="password" id="registerPassword" class="input-field block w-full rounded-md border-gray-300 shadow-sm py-2 px-3 border" placeholder="Create a password" required>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fas fa-lock text-gray-400"></i></div>
+                        <input type="password" id="registerPassword" class="input-field pl-10 pr-10 block w-full rounded-md border-gray-300 shadow-sm py-2 px-3 border" placeholder="Create a password" required>
+                        <button type="button" id="toggleRegisterPassword" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"><i class="fas fa-eye"></i></button>
+                    </div>
                 </div>
                 <div>
                     <label for="registerToken" class="block text-sm font-medium text-gray-700 mb-1">Registration Token</label>
-                     <input type="text" id="registerToken" class="input-field block w-full rounded-md border-gray-300 shadow-sm py-2 px-3 border" placeholder="Enter token from admin" required>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fas fa-key text-gray-400"></i></div>
+                        <input type="text" id="registerToken" class="input-field pl-10 block w-full rounded-md border-gray-300 shadow-sm py-2 px-3 border" placeholder="Enter token from admin" required>
+                    </div>
                 </div>
                 <div class="pt-2">
-                    <button type="submit" class="w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 btn-primary">
+                    <button type="submit" class="w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 btn-primary">
                         <span class="btn-text">Create Account</span>
                         <div class="loader hidden ml-2"></div>
                     </button>
                 </div>
             </form>
             <div class="mt-6 text-center text-sm">
-                <p class="text-gray-600">Already have an account? <a href="#" id="showLoginView" class="font-medium text-teal-600 hover:text-teal-500">Sign in</a></p>
+                <p class="text-gray-600">Already have an account? <a href="#" id="showLoginView" class="font-medium text-blue-600 hover:text-blue-500">Sign in</a></p>
             </div>
         </div>
     </div>
@@ -176,7 +218,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxIuN12u7pCfV5NUvFHSKMSm5TbupitQ7gWyQwi8mplVyPHhUxgudx2xbqRubakE2VQ/exec'; // IMPORTANT: Replace with your script URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyBVtGdXlfD2upvZlxIDSPakcML22aOSXBWSiAOrWyMF_20oMldZXTVl-LGeErGyuHK/exec';
 
     // --- DOM Elements ---
     const loginView = document.getElementById('loginView');
@@ -194,12 +236,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const generateTokenBtn = document.getElementById('generateTokenBtn');
     const tokenMessage = document.getElementById('tokenMessage');
     const whatsappPrompt = document.getElementById('whatsappPrompt');
+    const whatsappLink = document.getElementById('whatsappLink');
+    const proceedToRegisterBtn = document.getElementById('proceedToRegisterBtn');
     
     const toggleLoginPassword = document.getElementById('toggleLoginPassword');
+    const toggleRegisterPassword = document.getElementById('toggleRegisterPassword');
 
-    // --- New DOM elements for Greeting and Date/Time ---
     const greetingEl = document.getElementById('greeting');
     const dateTimeEl = document.getElementById('dateTime');
+    const greetingContainer = document.getElementById('greetingContainer');
+    const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+    const loginUsernameInput = document.getElementById('loginUsername');
 
     // --- Helper Functions ---
     const showMessage = (el, message, isError = false) => {
@@ -220,6 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     toggleLoginPassword.addEventListener('click', () => togglePasswordVisibility(document.getElementById('loginPassword'), toggleLoginPassword));
+    toggleRegisterPassword.addEventListener('click', () => togglePasswordVisibility(document.getElementById('registerPassword'), toggleRegisterPassword));
 
     const toggleLoader = (button, isLoading) => {
         const btnText = button.querySelector('.btn-text');
@@ -241,14 +289,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const hour = now.getHours();
 
         let greetingText;
+        let themeClass = '';
+        let iconHTML = '';
+
         if (hour < 12) {
             greetingText = 'Good Morning';
+            themeClass = 'morning-theme';
+            iconHTML = '<i class="fas fa-sun"></i>';
         } else if (hour < 18) {
             greetingText = 'Good Afternoon';
+            themeClass = 'afternoon-theme';
+            iconHTML = '<i class="fas fa-cloud-sun"></i>';
         } else {
             greetingText = 'Good Evening';
+            themeClass = 'evening-theme';
+            iconHTML = '<i class="fas fa-moon"></i>';
         }
-        greetingEl.textContent = greetingText;
+
+        greetingContainer.className = 'text-center mb-6 rounded-lg ' + themeClass;
+        greetingEl.innerHTML = `${iconHTML}${greetingText}`;
 
         const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
         const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
@@ -273,9 +332,22 @@ document.addEventListener('DOMContentLoaded', () => {
         loginView.classList.remove('hidden');
     });
 
+    // --- Dynamic Forgot Password Link ---
+    const updateForgotPasswordLink = () => {
+        const username = loginUsernameInput.value;
+        let message = "VPL%3A%20I%20forgot%20my%20password.";
+        if (username) {
+            message = `VPL%3A%20I%20forgot%20my%20password.%20My%20username%20is%3A%20${encodeURIComponent(username)}`;
+        }
+        forgotPasswordLink.href = `https://wa.me/254722163568?text=${message}`;
+    };
+
+    loginUsernameInput.addEventListener('input', updateForgotPasswordLink);
+
+
     // --- Avatar Quick Login ---
     const loadAvatars = () => {
-        const users = JSON.parse(localStorage.getItem('drongoUsers') || '[]');
+        const users = JSON.parse(localStorage.getItem('veePlusUsers') || '[]');
         if (users.length > 0) {
             avatarContainer.classList.remove('hidden');
             avatarProfiles.innerHTML = '';
@@ -285,14 +357,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 avatarEl.dataset.username = username;
                 const initial = username.charAt(0).toUpperCase();
                 avatarEl.innerHTML = `
-                    <div class="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center group-hover:bg-teal-100 transition">
-                        <span class="text-2xl font-bold text-slate-600 group-hover:text-teal-600">${initial}</span>
+                    <div class="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center group-hover:bg-blue-100 transition">
+                        <span class="text-2xl font-bold text-slate-600 group-hover:text-blue-600">${initial}</span>
                     </div>
                     <p class="mt-2 text-sm font-semibold text-slate-700">${username}</p>
                 `;
                 avatarEl.addEventListener('click', () => {
                     document.getElementById('loginUsername').value = username;
                     document.getElementById('loginPassword').focus();
+                    updateForgotPasswordLink(); // Update link when avatar is clicked
                 });
                 avatarProfiles.appendChild(avatarEl);
             });
@@ -300,10 +373,10 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const saveUserToLocalStorage = (username) => {
-        let users = JSON.parse(localStorage.getItem('drongoUsers') || '[]');
+        let users = JSON.parse(localStorage.getItem('veePlusUsers') || '[]');
         if (!users.includes(username)) {
             users.push(username);
-            localStorage.setItem('drongoUsers', JSON.stringify(users));
+            localStorage.setItem('veePlusUsers', JSON.stringify(users));
         }
     };
 
@@ -327,7 +400,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 saveUserToLocalStorage(username);
                 localStorage.setItem('sessionUser', username);
                 setTimeout(() => {
-                    window.location.href = (username.toLowerCase() === 'admin' && password === 'drongo@admin') ? 'admin.html' : 'drongo.html';
+                    if (username.toLowerCase() === 'admin' && password === 'Admin@12345') {
+                        window.location.href = 'admin.html';
+                    } else {
+                        window.location.href = 'vee.html';
+                    }
                 }, 1000);
             } else {
                 showMessage(loginMessage, result.message, true);
@@ -351,18 +428,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (result.success) {
                 const tokenId = result.tokenId;
-                const whatsappLink = whatsappPrompt.querySelector('a');
-                whatsappLink.href = `https://wa.me/254722163568?text=Hello%2C%20I%20need%20a%20registration%20token.%20My%20Token%20ID%20is%3A%20${tokenId}`;
+                whatsappLink.href = `https://wa.me/254722163568?text=VPL%3A%20Hello%2C%20I%20need%20a%20registration%20token.%20My%20Token%20ID%20is%3A%20${tokenId}`;
                 
-                showMessage(tokenMessage, `Your Token ID is: ${tokenId}. Contact the admin now.`, false);
+                showMessage(tokenMessage, `Your Token ID is: ${tokenId}. Send this to the admin.`, false);
                 whatsappPrompt.classList.remove('hidden');
                 generateTokenBtn.classList.add('hidden');
-                
-                // Show registration form after a delay
-                setTimeout(() => {
-                    tokenStep.classList.add('hidden');
-                    registerForm.classList.remove('hidden');
-                }, 10000);
+                proceedToRegisterBtn.classList.remove('hidden');
 
             } else {
                 showMessage(tokenMessage, result.message, true);
@@ -373,6 +444,13 @@ document.addEventListener('DOMContentLoaded', () => {
             toggleLoader(generateTokenBtn, false);
         }
     });
+
+    // --- Proceed to Registration Logic ---
+    proceedToRegisterBtn.addEventListener('click', () => {
+        tokenStep.classList.add('hidden');
+        registerForm.classList.remove('hidden');
+    });
+
 
     // --- Registration Logic ---
     registerForm.addEventListener('submit', async (e) => {
@@ -411,6 +489,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadAvatars();
     updateDateTime(); // Set initial time
     setInterval(updateDateTime, 1000); // Update time every second
+    updateForgotPasswordLink(); // Set initial state of forgot password link
 });
 </script>
 </body>
