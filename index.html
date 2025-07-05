@@ -428,6 +428,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 showMessage(loginMessage, 'Login successful! Redirecting...', false);
                 saveUserToLocalStorage(username);
                 localStorage.setItem('sessionUser', username);
+                
+                // Create and store session token
+                const sessionToken = `VPL_SESS_${Date.now()}_${Math.random().toString(36).substring(2)}`;
+                localStorage.setItem('veePlusSessionToken', sessionToken);
+
                 setTimeout(() => {
                     if (username.toLowerCase() === 'admin' && password === 'Admin@12345') {
                         window.location.href = 'admin.html';
