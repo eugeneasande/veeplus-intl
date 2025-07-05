@@ -55,7 +55,7 @@
     #greetingContainer {
         transition: background-color 0.5s, color 0.5s;
         border-radius: 0.75rem;
-        padding: 1rem;
+        padding: 0.75rem; /* Reduced padding for mobile */
         animation: fadeIn 0.8s ease-out;
         box-shadow: 0 4px 15px rgba(0,0,0,0.05);
     }
@@ -95,29 +95,29 @@
   <div class="max-w-md w-full">
     <!-- Login View -->
     <div id="loginView" class="bg-white rounded-xl overflow-hidden form-container">
-        <div class="bg-veeplus py-6 px-8 text-center">
-            <div class="flex justify-center mb-4">
-                <div class="bg-white p-3 rounded-full">
-                    <i class="fas fa-building text-blue-800 text-3xl"></i>
+        <div class="bg-veeplus py-4 sm:py-6 px-6 sm:px-8 text-center">
+            <div class="flex justify-center mb-3">
+                <div class="bg-white p-2 sm:p-3 rounded-full">
+                    <i class="fas fa-building text-blue-800 text-2xl sm:text-3xl"></i>
                 </div>
             </div>
-            <h1 class="text-2xl font-bold text-white">VEE PLUS INTERNATIONAL LIMITED</h1>
-            <p class="text-blue-200 mt-1">Secure Enterprise Portal</p>
+            <h1 class="text-xl sm:text-2xl font-bold text-white">VEE PLUS INTERNATIONAL LIMITED</h1>
+            <p class="text-blue-200 text-sm mt-1">Secure Enterprise Portal</p>
         </div>
-        <div class="px-8 py-6">
+        <div class="px-6 py-6 sm:px-8 sm:py-8">
             <!-- Greeting and Date/Time Display -->
-            <div id="greetingContainer" class="text-center mb-6 rounded-lg">
-                <h2 id="greeting" class="text-2xl font-semibold text-gray-700"></h2>
-                <p id="dateTime" class="text-sm text-gray-500 mt-1"></p>
+            <div id="greetingContainer" class="text-center mb-4 sm:mb-6 rounded-lg">
+                <h2 id="greeting" class="text-xl sm:text-2xl font-semibold text-gray-700"></h2>
+                <p id="dateTime" class="text-xs sm:text-sm text-gray-500 mt-1"></p>
             </div>
 
             <!-- Avatar Quick Login -->
             <div id="avatarContainer" class="mb-4 text-center hidden">
                 <p class="text-sm font-medium text-gray-600 mb-3">Quick Login</p>
-                <div id="avatarProfiles" class="flex justify-center gap-4 flex-wrap">
+                <div id="avatarProfiles" class="flex justify-center gap-3 sm:gap-4 flex-wrap">
                     <!-- Avatars will be injected here -->
                 </div>
-                <div class="relative flex py-4 items-center">
+                <div class="relative flex py-3 sm:py-4 items-center">
                     <div class="flex-grow border-t border-gray-200"></div>
                     <span class="flex-shrink mx-4 text-gray-400 text-xs">OR</span>
                     <div class="flex-grow border-t border-gray-200"></div>
@@ -125,7 +125,7 @@
             </div>
 
             <div id="loginMessage" class="hidden p-3 rounded-md mb-4 text-sm text-center"></div>
-            <form id="loginForm" class="space-y-4">
+            <form id="loginForm" class="space-y-3 sm:space-y-4">
                 <div>
                     <label for="loginUsername" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
                     <div class="relative">
@@ -159,16 +159,16 @@
 
     <!-- Register View -->
     <div id="registerView" class="hidden bg-white rounded-xl overflow-hidden form-container">
-        <div class="bg-veeplus py-6 px-8 text-center">
+        <div class="bg-veeplus py-4 sm:py-6 px-6 sm:px-8 text-center">
             <div class="flex justify-center mb-3">
-                <div class="bg-white p-3 rounded-full shadow-md">
-                    <i class="fas fa-user-plus text-blue-800 text-3xl"></i>
+                <div class="bg-white p-2 sm:p-3 rounded-full shadow-md">
+                    <i class="fas fa-user-plus text-blue-800 text-2xl sm:text-3xl"></i>
                 </div>
             </div>
-            <h1 class="text-2xl font-bold text-white">Create New Account</h1>
-            <p class="text-blue-200 mt-1">Join the Portal</p>
+            <h1 class="text-xl sm:text-2xl font-bold text-white">Create New Account</h1>
+            <p class="text-blue-200 text-sm mt-1">Join the Portal</p>
         </div>
-        <div class="px-8 py-6">
+        <div class="px-6 py-6 sm:px-8 sm:py-8">
             <!-- Token Generation Step -->
             <div id="tokenStep">
                 <p class="text-center text-gray-600 mb-4">First, you need a registration token from the administrator.</p>
@@ -181,7 +181,7 @@
                     <p class="text-green-800 font-medium">Your Token ID has been generated!</p>
                     <p class="text-sm text-green-700 mt-2">Please send this ID to the administrator on WhatsApp to receive your unique registration token.</p>
                      <a id="whatsappLink" href="#" target="_blank" class="mt-3 inline-block bg-green-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-700">
-                        <i class="fab fa-whatsapp mr-2"></i>Select to Contact Admin
+                        <i class="fab fa-whatsapp mr-2"></i>Contact Admin
                     </a>
                 </div>
                 <button id="proceedToRegisterBtn" type="button" class="hidden mt-4 w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 btn-primary">
@@ -191,7 +191,7 @@
             </div>
 
             <!-- Registration Form Step -->
-            <form id="registerForm" class="hidden space-y-4">
+            <form id="registerForm" class="hidden space-y-3 sm:space-y-4">
                  <p class="text-center text-gray-600 text-sm">Step 2: Enter your details and the token provided by the admin.</p>
                 <div>
                     <label for="registerUsername" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
@@ -335,7 +335,7 @@ document.addEventListener('DOMContentLoaded', () => {
             iconHTML = '<i class="fas fa-moon"></i>';
         }
 
-        greetingContainer.className = 'text-center mb-6 rounded-lg ' + themeClass;
+        greetingContainer.className = 'text-center mb-4 sm:mb-6 rounded-lg ' + themeClass;
         greetingEl.innerHTML = `${iconHTML}${greetingText}`;
 
         const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -386,10 +386,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 avatarEl.dataset.username = username;
                 const initial = username.charAt(0).toUpperCase();
                 avatarEl.innerHTML = `
-                    <div class="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center group-hover:bg-blue-100 transition">
-                        <span class="text-2xl font-bold text-slate-600 group-hover:text-blue-600">${initial}</span>
+                    <div class="w-12 h-12 sm:w-16 sm:h-16 bg-slate-200 rounded-full flex items-center justify-center group-hover:bg-blue-100 transition">
+                        <span class="text-xl sm:text-2xl font-bold text-slate-600 group-hover:text-blue-600">${initial}</span>
                     </div>
-                    <p class="mt-2 text-sm font-semibold text-slate-700">${username}</p>
+                    <p class="mt-2 text-xs sm:text-sm font-semibold text-slate-700">${username}</p>
                 `;
                 avatarEl.addEventListener('click', () => {
                     document.getElementById('loginUsername').value = username;
