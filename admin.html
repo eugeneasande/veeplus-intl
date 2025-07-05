@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>VEE-PLUS Admin Panel</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Chart.js library for data visualization -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -29,7 +28,6 @@
       transform: translateY(-5px);
       box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     }
-    /* Styles for the Edit Modal */
     .modal-overlay {
         transition: opacity 0.3s ease;
     }
@@ -39,6 +37,13 @@
   </style>
 </head>
 <body class="min-h-screen bg-gray-100">
+  <script>
+      // Session Check - Redirect to login if no token is found
+      if (!localStorage.getItem('veePlusSessionToken')) {
+          // **IMPORTANT**: Replace 'index.html' with the actual name of your login file if it's different
+          window.location.href = 'index.html'; 
+      }
+  </script>
   <!-- Admin Header -->
   <header class="bg-white shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -58,6 +63,9 @@
               <p class="text-xs font-medium text-gray-500">Administrator</p>
             </div>
           </div>
+           <button id="logoutBtn" class="bg-red-100 text-red-700 hover:bg-red-200 font-semibold py-2 px-3 rounded-lg transition text-sm" title="Logout">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
         </div>
       </div>
     </div>
@@ -208,7 +216,6 @@
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-            <!-- NEW: Actions Column Header -->
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
           </tr>
         </thead>
@@ -238,7 +245,7 @@
     </div>
   </main>
 
-  <!-- NEW: Edit Record Modal -->
+  <!-- Edit Record Modal -->
   <div id="editModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4 z-50 hidden modal-overlay">
     <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl p-6 modal-container transform scale-95">
         <div class="flex justify-between items-center mb-4 border-b pb-3">
@@ -282,7 +289,7 @@
   </div>
 
   <script>
-    // Export functionality (no changes needed)
+    // Export functionality
     const exportMenuButton = document.getElementById('export-menu-button');
     const exportMenu = document.getElementById('export-menu');
     exportMenuButton.addEventListener('click', () => exportMenu.classList.toggle('hidden'));
@@ -321,7 +328,7 @@
     const perPageSelect = document.getElementById('perPageSelect');
     const salesDatepicker = document.getElementById('salesDatepicker');
     const SHEETDB_URL = "https://sheetdb.io/api/v1/whim74m5dy6u6";
-    let salesChart, userSalesChart; // Chart instances
+    let salesChart, userSalesChart; 
 
     // --- Animated Counter Function ---
     function animateValue(obj, start, end, duration, isCurrency = false) {
@@ -348,7 +355,6 @@
         const userSales = {};
         const salesByDate = {};
         
-        // Initialize last 7 days
         for (let i = 6; i >= 0; i--) {
             const d = new Date();
             d.setDate(d.getDate() - i);
@@ -367,19 +373,16 @@
             }
         });
 
-        // Update sales period with today's data by default
         updateSalesPeriod('today');
         const avgSale = data.length > 0 ? (data.reduce((acc, item) => acc + (parseFloat(item.total) || 0), 0) / data.length) : 0;
         animateValue(document.getElementById('avgSale'), 0, avgSale, 1500, true);
         const topUser = Object.keys(userSales).length > 0 ? Object.entries(userSales).sort((a, b) => b[1] - a[1])[0][0] : '-';
         document.getElementById('topUser').textContent = topUser;
 
-        // Update Charts
         renderSalesChart(Object.keys(salesByDate).map(date => new Date(date).toLocaleDateString('en-US', { weekday: 'short' })), Object.values(salesByDate));
         renderUserSalesChart(Object.keys(userSales), Object.values(userSales));
     }
     
-    // --- Function to calculate and display sales for a selected date ---
     function calculateSalesForDate(selectedDate) {
         if (!selectedDate) {
             document.getElementById('selectedDaySales').textContent = 'Ksh 0';
@@ -391,7 +394,6 @@
         animateValue(document.getElementById('selectedDaySales'), 0, totalSales, 1000, true);
     }
 
-    // --- Function to render the sales LINE chart ---
     function renderSalesChart(labels, data) {
         const ctx = document.getElementById('salesChart').getContext('2d');
         if (salesChart) salesChart.destroy();
@@ -420,7 +422,6 @@
         });
     }
 
-    // --- Function to render the user sales DOUGHNUT chart ---
     function renderUserSalesChart(labels, data) {
         const ctx = document.getElementById('userSalesChart').getContext('2d');
         if (userSalesChart) userSalesChart.destroy();
@@ -598,10 +599,8 @@
         periodSales = filteredData.reduce((acc, item) => acc + (parseFloat(item.total) || 0), 0);
         periodReceipts = filteredData.length;
 
-        // Update the sales period card
         animateValue(document.getElementById('salesPeriodValue'), 0, periodSales, 1500, true);
         
-        // Update other stats based on filtered data
         animateValue(document.getElementById('totalReceipts'), 0, allData.length, 1500);
         const avgSale = allData.length > 0 ? (allData.reduce((acc, item) => acc + (parseFloat(item.total) || 0), 0) / allData.length) : 0;
         animateValue(document.getElementById('avgSale'), 0, avgSale, 1500, true);
@@ -625,7 +624,7 @@
       }
     }
     
-    // --- NEW: CRUD Functionality ---
+    // --- CRUD Functionality ---
     const editModal = document.getElementById('editModal');
     const editForm = document.getElementById('editForm');
     const closeModalBtn = document.getElementById('closeModalBtn');
@@ -700,6 +699,14 @@
             alert(`Error deleting record: ${error.message}`);
         }
     };
+    
+    // Add the logout functionality
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+        localStorage.removeItem('veePlusSessionToken');
+        localStorage.removeItem('sessionUser');
+        // **IMPORTANT**: Replace 'index.html' with the actual name of your login file if it's different
+        window.location.href = 'index.html'; 
+    });
 
     document.addEventListener("DOMContentLoaded", loadAdminData());
   </script>
