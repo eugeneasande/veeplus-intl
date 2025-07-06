@@ -215,7 +215,7 @@
                     </div>
 
                     <div class="grid grid-cols-2 gap-3 pt-4">
-                        <button id="generateBtn" data-tooltip="Finalizes and saves the receipt to the database, then clears the form for a new sale." class="col-span-2 bg-blue-600 hover:bg-blue-700 text-white py-2.5 px-4 rounded-md font-medium transition flex items-center justify-center shadow-sm hover:shadow-md">
+                        <button id="generateBtn" data-tooltip="Finalizes and saves the receipt to the database. The form will NOT be cleared." class="col-span-2 bg-blue-600 hover:bg-blue-700 text-white py-2.5 px-4 rounded-md font-medium transition flex items-center justify-center shadow-sm hover:shadow-md">
                             <i class="fas fa-receipt mr-2"></i> Generate & Save
                         </button>
                         <button id="saveDraftBtn" data-tooltip="Saves the current receipt details as a draft to load and complete later." class="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md font-medium transition flex items-center justify-center no-print">
@@ -777,12 +777,15 @@
                 .then(res => res.json())
                 .then(res => {
                     showNotification('✅ Receipt saved successfully!');
+                    // If the saved receipt was a draft, remove it from local storage
                     if (currentDraftId) {
                         let drafts = getDrafts();
                         drafts = drafts.filter(d => d.id != currentDraftId);
                         saveDrafts(drafts);
+                        currentDraftId = null; // Clear the draft ID
                     }
-                    resetForm();
+                    // Fetch the next receipt number for the *next* sale, but don't clear the form.
+                    fetchLastReceiptNumber(); 
                 })
                 .catch(err => {
                     showNotification(`❌ Failed to save receipt. ${err.message}`, 'error');
